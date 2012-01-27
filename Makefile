@@ -1,6 +1,8 @@
-CXX = nvcc
-CC = nvcc
-CPPFLAGS=-I../include -I/usr/loca/cuda/include -I/opt/local/include
+CUDA_ROOT=/usr/local/cuda
+
+CXX = $(CUDA_ROOT)/nvcc
+CC = $(CUDA_ROOT)/nvcc
+CPPFLAGS=-I../include -I$(CUDA_ROOT)/include -I/opt/local/include
 CXXFLAGS=-g -m64 -O3 -use_fast_math
 LDFLAGS=-g -m64 -L../lib -lfreenect -Xlinker -framework,OpenGL,-framework,GLUT
 
