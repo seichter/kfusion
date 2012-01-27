@@ -9,6 +9,7 @@
 #include <vector>
 #include <ctime>
 
+
 struct PerfStats {
     enum Type { TIME, COUNT, PERCENTAGE };
     struct Stats {
@@ -32,10 +33,12 @@ struct PerfStats {
         s.data.push_back(t);
         s.type = type;
     }
+
     double start(void){
         last = get_time();
         return last;
     }
+
     double sample(const std::string &key){
         const double now = get_time();
         sample(key, now - last, TIME);
