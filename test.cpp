@@ -13,6 +13,7 @@
 
 #include "perfstats.h"
 
+
 using namespace std;
 using namespace TooN;
 
@@ -222,6 +223,7 @@ int main(int argc, char ** argv) {
     glutIdleFunc(idle);
 
     glutMainLoop();
+
 
     return 0;
 }
