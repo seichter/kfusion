@@ -18,8 +18,7 @@ cuda_add_executable(devicequery
 	devicequery.cpp
 	)
 
-
-set(kfusion_cuda_srcs
+	set(kfusion_cuda_srcs
 	helpers.cu
 	helpers.h
 	kfusion.cu
