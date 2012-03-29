@@ -154,6 +154,7 @@ __global__ void vertex2normal( Image<float3> normal, const Image<float3> vertex 
 
     const float3 dxv = right - left;
     const float3 dyv = down - up;
+
     normal[pixel] = normalize(cross(dyv, dxv)); // switched dx and dy to get factor -1
 }
 

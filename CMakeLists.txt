@@ -13,6 +13,9 @@ include_directories(
 
 #set(CUDA_NVCC_FLAGS "-arch=sm_12")
 
+
+#set(CUDA_NVCC_FLAGS "-arch=sm_12")
+
 find_package(CUDA REQUIRED)
 find_package(Freenect)
 find_package(GLUT)
