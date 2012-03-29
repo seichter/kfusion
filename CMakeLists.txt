@@ -10,6 +10,9 @@ include_directories(
 	${CMAKE_BINARY_DIR}/include
 )
 
+
+#set(CUDA_NVCC_FLAGS "-arch=sm_12")
+
 find_package(CUDA REQUIRED)
 find_package(Freenect)
 find_package(GLUT)
