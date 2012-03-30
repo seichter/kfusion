@@ -17,6 +17,8 @@
 using namespace std;
 using namespace TooN;
 
+#include "perfstats.h"
+
 SE3<float> preTrans(makeVector(0.0, 0, -0.9, 0, 0, 0));
 SE3<float> rot(makeVector(0.0, 0, 0, 0, 0, 0));
 SE3<float> trans(makeVector(0.5, 0.5, 0.5, 0, 0, 0));

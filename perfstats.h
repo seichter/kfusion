@@ -24,6 +24,7 @@ struct PerfStats {
     std::map<std::string, Stats> stats;
     double last;
 
+
     static double get_time() {
         return double(std::clock())/CLOCKS_PER_SEC;
     }

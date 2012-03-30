@@ -52,5 +52,6 @@ if(GLUT_FOUND)
 		)
 	
 	target_link_libraries(kfusion_test kfusion ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES}) 
+
 endif()
 	
