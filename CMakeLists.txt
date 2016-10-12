@@ -39,6 +39,7 @@ set(kfusion_cuda_srcs
     kfusion.cu
     kfusion.h
     cutil_math.h
+    README.md
     )
 
 cuda_add_library(kfusion STATIC

@@ -1,6 +1,6 @@
 
-KFusion 0.4
-=============
+KFusion 0.4.1
+==============
 
 Copyright TU Graz, Gerhard Reitmayr, 2011 - 2013
 
@@ -16,7 +16,7 @@ KFusion is mainly written in CUDA with some interface code to display graphics o
 Requirements
 ------------
 
-KFusion depends on the following libraries:
+KFusion (optionally) depends on the following libraries:
 
 * http://www.edwardrosten.com/cvd/toon.html
 * GLUT
@@ -29,16 +29,18 @@ while on other platforms use libfreenect:
 
 * http://openkinect.org/
 
-and of course the CUDA 5 SDK by NVidia
+and of course the CUDA SDK by NVidia
 
 * http://developer.nvidia.com/cuda
 
 Install
------
+-------
 
 Use CMake to create build files for your platform. Some tips and tricks
+
 - On Windows, make sure to use a 64-bit version of GLUT
-- On Apple OSX, set CUDA_HOST_COMPILER to /usr/bin/g++
+- On newer *nix versions you need CLang as host compiler (gcc 5.x upwards is incompatible with nvcc)
+
 
 Altenatively, On Unix/OSX platforms, tweak the Makefile for your setup, then make.
 
@@ -89,4 +91,4 @@ Done
 
 Contributors
 -------------
-Hartmut Seichter
+[Hartmut Seichter](http://www.technotecture.com)
