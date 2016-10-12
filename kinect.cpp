@@ -29,6 +29,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <cstdlib>
+#include <cstring>
+
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
