@@ -68,6 +68,14 @@ if (GLUT_FOUND)
             interface_kinect.cpp
             )
         target_link_libraries(kfusion_kinect kfusion ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${FREENECT_LIBRARIES})
+
+
+        install(TARGETS kfusion_kinect kfusion_test
+                RUNTIME DESTINATION bin
+                LIBRARY DESTINATION bin
+                )
+
+
     else()
 
         include_directories($ENV{KINECTSDK10_DIR}/inc)
