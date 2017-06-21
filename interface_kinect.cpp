@@ -81,10 +81,6 @@ int KinectDevice::open()
     return 0;
 }
 
-
-
-
-
 bool KinectDevice::available() const
 {
     return gotDepth;
