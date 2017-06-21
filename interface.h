@@ -24,9 +24,56 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
-int InitKinect( uint16_t * depth_buffer[2], unsigned char * rgb_buffer );
-bool KinectFrameAvailable();
-int GetKinectFrame();
-void CloseKinect();
+
+
+typedef unsigned short uint16_t;
+
+class RGBD {
+protected:
+
+    uint16_t *depth_buffer[2];
+    unsigned char *rgb_buffer;
+
+
+    int depth_index;
+
+public:
+    enum RGBDDevice {
+        kRGBDDeviceKinect
+    };
+
+    RGBD() {}
+    virtual ~RGBD() {}
+
+    virtual int open() = 0;
+    virtual bool available() const { return false; }
+    virtual int update() = 0;
+    virtual void close() = 0;
+
+    static RGBD* create(RGBDDevice device,const char* flags = "");
+
+    void setBuffers(uint16_t * dBuffer[2], unsigned char * rgbBuffer) {
+        depth_buffer[0] = dBuffer[0];
+        depth_buffer[1] = dBuffer[1];
+        rgb_buffer = rgbBuffer;
+    }
+
+
+    uint16_t* currentDepthBuffer() const {
+        return depth_buffer[depth_index];
+    }
+
+    int currentDepthBufferIndex() const {
+        return depth_index;
+    }
+
+};
+
+
+
+//int InitKinect( uint16_t * depth_buffer[2], unsigned char * rgb_buffer );
+//bool KinectFrameAvailable();
+//int GetKinectFrame();
+//void CloseKinect();
 
 #endif

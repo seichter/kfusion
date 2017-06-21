@@ -10,10 +10,8 @@ find_package(OpenGL)
 find_package(Freenect)
 find_package(GLUT)
 
-
-# avoid gcc
-set(CUDA_HOST_COMPILER clang++)
-#set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_20,code=sm_20;--std=c++11)
+# require gcc 5 on Linux
+set(CUDA_HOST_COMPILER /usr/bin/gcc-5)
 
 include_directories(
     ${CMAKE_BINARY_DIR}/include
@@ -30,7 +28,7 @@ include_directories(
 #    )
 
 
-message(STATUS "${CUDA_LIBRARIES}")
+#message(STATUS "${CUDA_LIBRARIES}")
 
 
 set(kfusion_cuda_srcs
@@ -63,7 +61,11 @@ if (GLUT_FOUND)
         include_directories(${FREENECT_INCLUDE_PATHS})
         add_definitions(-DLIBFREENECT_INTERFACE)
         add_executable(kfusion_kinect
-            kinect.cpp interface.h interface.cpp
+            kinect.cpp
+            interface.h
+            interface.cpp
+            interface_kinect.hpp
+            interface_kinect.cpp
             )
         target_link_libraries(kfusion_kinect kfusion ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${FREENECT_LIBRARIES})
     else()
