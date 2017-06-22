@@ -8,7 +8,12 @@ find_package(CUDA REQUIRED)
 find_package(TooN REQUIRED)
 find_package(OpenGL)
 find_package(Freenect)
+#find_package(LibRealSense)
 find_package(GLUT)
+
+
+set(CMAKE_CXX_STANDARD 11)
+
 
 # require gcc 5 on Linux
 set(CUDA_HOST_COMPILER /usr/bin/gcc-5)
@@ -18,6 +23,8 @@ include_directories(
     ${TOON_INCLUDE_PATHS}
     )
 
+
+add_subdirectory(thirdparty/librealsense)
 
 #cuda_add_executable(devicequery
 #        devicequery.cpp
@@ -30,6 +37,10 @@ include_directories(
 
 #message(STATUS "${CUDA_LIBRARIES}")
 
+find_package(Threads REQUIRED)
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(kfusion_cuda_srcs
     helpers.cu
@@ -55,7 +66,7 @@ if (GLUT_FOUND)
         test.cpp
         )
 
-    target_link_libraries(kfusion_test kfusion ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES})
+    target_link_libraries(kfusion_test kfusion ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
     if(FREENECT_FOUND)
         include_directories(${FREENECT_INCLUDE_PATHS})
@@ -66,14 +77,24 @@ if (GLUT_FOUND)
             interface.cpp
             interface_kinect.hpp
             interface_kinect.cpp
+            interface_librealsense.hpp
+            interface_librealsense.cpp
             )
-        target_link_libraries(kfusion_kinect kfusion ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${FREENECT_LIBRARIES})
+
+        target_link_libraries(kfusion_kinect
+            kfusion
+            ${GLUT_LIBRARIES}
+            ${OPENGL_LIBRARIES}
+            ${FREENECT_LIBRARIES}
+            realsense
+            ${CMAKE_THREAD_LIBS_INIT}
+            )
 
 
         install(TARGETS kfusion_kinect kfusion_test
-                RUNTIME DESTINATION bin
-                LIBRARY DESTINATION bin
-                )
+            RUNTIME DESTINATION bin
+            LIBRARY DESTINATION bin
+            )
 
 
     else()

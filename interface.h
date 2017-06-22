@@ -39,7 +39,8 @@ protected:
 
 public:
     enum RGBDDevice {
-        kRGBDDeviceKinect
+        kRGBDDeviceKinect,
+        kRGBDRealSense
     };
 
     RGBD() {}

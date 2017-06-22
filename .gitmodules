@@ -1,3 +1,6 @@
 [submodule "thirdparty/TooN"]
 	path = thirdparty/TooN
 	url = git://github.com/edrosten/TooN.git
+[submodule "thirdparty/librealsense"]
+	path = thirdparty/librealsense
+	url = https://github.com/IntelRealSense/librealsense.git

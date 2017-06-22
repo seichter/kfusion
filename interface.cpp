@@ -519,11 +519,18 @@ int GetKinectFrame() {
 #error "No camera driver interface specified!"
 #endif
 
+
+#include "interface_librealsense.hpp"
+
+
 RGBD *RGBD::create(RGBD::RGBDDevice device, const char *flags) {
 
     switch (device) {
     case RGBD::kRGBDDeviceKinect:
         return new KinectDevice();
+        break;
+    case RGBDDevice::kRGBDRealSense:
+        return new RealSenseDevice();
         break;
     default:
         break;

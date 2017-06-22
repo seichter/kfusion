@@ -236,7 +236,8 @@ int main(int argc, char ** argv) {
     // everything else is derived from that.
     // config.volumeSize = make_uint3(64);
     // config.volumeSize = make_uint3(128);
-    config.volumeSize = make_uint3(256);
+//    config.volumeSize = make_uint3(256);
+    config.volumeSize = make_uint3(512);
 
     // these are physical dimensions in meters
     config.volumeDimensions = make_float3(size);
@@ -247,6 +248,8 @@ int main(int argc, char ** argv) {
 
     // change the following parameters for using 640 x 480 input images
     config.inputSize = make_uint2(320,240);
+//    config.inputSize = make_uint2(640,480);
+
     config.camera =  make_float4(531.15/2, 531.15/2, 640/4, 480/4);
 
     // config.iterations is a vector<int>, the length determines
@@ -291,7 +294,9 @@ int main(int argc, char ** argv) {
 
     uint16_t * buffers[2] = {depthImage[0].data(), depthImage[1].data()};
 
-    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceKinect);
+//    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceKinect);
+    rgbdDevice = RGBD::create(RGBD::kRGBDRealSense);
+
     rgbdDevice->setBuffers(buffers, (unsigned char *)rgbImage.data());
 
     if (rgbdDevice->open()){
