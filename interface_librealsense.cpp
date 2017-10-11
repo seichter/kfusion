@@ -64,6 +64,22 @@ int RealSenseDevice::open()
 
     rs_enable_stream(dev, colorStream, depthWidth, depthHeight, RS_FORMAT_RGB8, framerate, &e);
 
+    rs_intrinsics intrinsics;
+
+    rs_get_stream_intrinsics(dev,colorStream,&intrinsics,0);
+
+
+
+    std::cout << "width:" << intrinsics.width << " height:" << intrinsics.height
+              << " focalx:" << intrinsics.fx << " focaly:" << intrinsics.fy
+              << " ppx:" << intrinsics.ppx << " ppy:" << intrinsics.ppy
+              << " coeff0:" << intrinsics.coeffs[0]
+              << " coeff1:" << intrinsics.coeffs[1]
+              << " coeff2:" << intrinsics.coeffs[2]
+              << " coeff3:" << intrinsics.coeffs[3]
+
+              << std::endl;
+
 
 
     int colorWidth = rs_get_stream_width(dev,colorStream,NULL);
@@ -98,7 +114,7 @@ int RealSenseDevice::update()
 {
     rs_error * e = 0;
 
-//    gotDepth = false;
+    //    gotDepth = false;
 
     rs_wait_for_frames(dev, &e);
 
@@ -115,10 +131,10 @@ void RealSenseDevice::setDepthBuffer() {
     const size_t depthBufferSize = 640*480;
     memcpy(depth_buffer[depth_index],depthPtr,depthBufferSize * sizeof(uint16_t));
 
-//    uint16_t rescale = 1.f / depthScale;
+    //    uint16_t rescale = 1.f / depthScale;
 
     for (size_t i = 0; i < depthBufferSize;i++) {
-//        depth_buffer[depth_index][i] = 1 / (depth_buffer[depth_index][i] + 1);
+        //        depth_buffer[depth_index][i] = 1 / (depth_buffer[depth_index][i] + 1);
         depth_buffer[depth_index][i] *= 1;
     }
 

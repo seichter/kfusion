@@ -8,6 +8,7 @@ find_package(CUDA REQUIRED)
 find_package(TooN REQUIRED)
 find_package(OpenGL)
 find_package(Freenect)
+find_package(OpenNI2)
 #find_package(LibRealSense)
 find_package(GLUT)
 
@@ -79,6 +80,8 @@ if (GLUT_FOUND)
             interface_kinect.cpp
             interface_librealsense.hpp
             interface_librealsense.cpp
+            interface_openni2.hpp
+            interface_openni2.cpp
             )
 
         target_link_libraries(kfusion_kinect
@@ -88,6 +91,7 @@ if (GLUT_FOUND)
             ${FREENECT_LIBRARIES}
             realsense
             ${CMAKE_THREAD_LIBS_INIT}
+            ${OPENNI2_LIBRARY}
             )
 
 
