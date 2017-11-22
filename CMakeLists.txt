@@ -110,6 +110,8 @@ target_link_libraries(
     ${kfusion_libs}
     )
 
+# message("LIBS : ${kfusion_libs}")
+# message("LIBS : ${OPENGL_LIBRARIES}")
 
 add_executable(kfusion_test
     test.cpp
@@ -122,56 +124,3 @@ target_link_libraries(
     ${OPENGL_LIBRARIES}
     )
 
-#if (GLUT_FOUND)
-
-#    include_directories(${GLUT_INCLUDE_DIR})
-
-#    add_executable(kfusion_test
-#        test.cpp
-#        )
-
-#    target_link_libraries(kfusion_test kfusion ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-
-#    if(FREENECT_FOUND)
-#        include_directories(${kfusion_incs})
-#        add_definitions(-DLIBFREENECT_INTERFACE)
-#        add_executable(kfusion_scan
-#            kinect.cpp
-#            interface.h
-#            interface.cpp
-#            interface_kinect.hpp
-#            interface_kinect.cpp
-##            interface_librealsense.hpp
-##            interface_librealsense.cpp
-##            interface_openni2.hpp
-##            interface_openni2.cpp
-#            )
-
-#        target_link_libraries(kfusion_scan
-#            kfusion
-#            ${GLUT_LIBRARIES}
-#            ${OPENGL_LIBRARIES}
-#            ${FREENECT_LIBRARIES}
-##            realsense
-#            ${CMAKE_THREAD_LIBS_INIT}
-##            ${OPENNI2_LIBRARY}
-#            )
-
-
-#        install(TARGETS kfusion_scan kfusion_test
-#            RUNTIME DESTINATION bin
-#            LIBRARY DESTINATION bin
-#            )
-
-
-#    else()
-
-#        include_directories($ENV{KINECTSDK10_DIR}/inc)
-#        add_definitions(-DMS_KINECT_INTERFACE)
-#        add_executable(kfusion_scan
-#            kinect.cpp interface.h interface.cpp
-#            )
-#        target_link_libraries(kfusion_scan kfusion ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} $ENV{KINECTSDK10_DIR}/lib/amd64/Kinect10.lib)
-#    endif()
-
-#endif()
