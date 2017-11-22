@@ -516,22 +516,46 @@ int GetKinectFrame() {
 }
 
 #else
-#error "No camera driver interface specified!"
+//#error "No camera driver interface specified!"
 #endif
 
 
-#include "interface_librealsense.hpp"
+#include "interface.h"
+
+#include "interface_config.hpp"
+
+
+#if defined(KFUSION_INTERFACE_HAVE_FREENECT)
+    #include "interface_kinect.hpp"
+#endif
+
+#if defined(KFUSION_INTERFACE_HAVE_OPENNI2)
+    #include "interface_openni2.hpp"
+#endif
+
+
+
+//#include "interface_librealsense.hpp"
 
 
 RGBD *RGBD::create(RGBD::RGBDDevice device, const char *flags) {
 
     switch (device) {
+#if defined(KFUSION_INTERFACE_HAVE_FREENECT)
     case RGBD::kRGBDDeviceKinect:
         return new KinectDevice();
         break;
-    case RGBDDevice::kRGBDRealSense:
-        return new RealSenseDevice();
+#endif
+
+#if defined(KFUSION_INTERFACE_HAVE_OPENNI2)
+    case RGBD::kRGBDDeviceOpenNI2:
+        return new OpenNIDevice();
         break;
+#endif
+
+        //    case RGBDDevice::kRGBDRealSense:
+//        return new RealSenseDevice();
+//        break;
     default:
         break;
     }

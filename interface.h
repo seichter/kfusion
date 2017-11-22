@@ -40,6 +40,7 @@ protected:
 public:
     enum RGBDDevice {
         kRGBDDeviceKinect,
+        kRGBDDeviceOpenNI2,
         kRGBDRealSense
     };
 

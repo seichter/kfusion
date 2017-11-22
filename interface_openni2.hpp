@@ -1,12 +1,10 @@
 #ifndef KFUSION_INTERFACE_OPENNI2
 #define KFUSION_INTERFACE_OPENNI2
 
-
-#include "interface.h"
-
 #include <OpenNI.h>
 #include <pthread.h>
 
+#include "interface.h"
 
 class OpenNIDevice : public RGBD {
 

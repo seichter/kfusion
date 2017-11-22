@@ -1,6 +1,6 @@
 #include "interface_kinect.hpp"
 
-//using namespace std;
+#include <iostream>
 
 void kinectdevice_depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 {

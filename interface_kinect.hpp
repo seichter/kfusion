@@ -6,7 +6,7 @@
 
 #include <libfreenect/libfreenect.h>
 #include <pthread.h>
-#include <iostream>
+
 
 
 class KinectDevice : public RGBD {
