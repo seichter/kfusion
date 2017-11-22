@@ -292,9 +292,9 @@ int main(int argc, char ** argv) {
 
     uint16_t * buffers[2] = {depthImage[0].data(), depthImage[1].data()};
 
-    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceKinect);
+//    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceKinect);
 //    rgbdDevice = RGBD::create(RGBD::kRGBDRealSense);
-//    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceOpenNI2);
+    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceOpenNI2);
 
 
 

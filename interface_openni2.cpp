@@ -6,7 +6,7 @@
 #include <iostream>
 #include <stdexcept>
 
-using namespace std;
+//using namespace std;
 //using namespace openni;
 
 
@@ -37,8 +37,8 @@ public:
     void *allocateFrameBuffer(int size)
     {
         if (size != 640*480*2) {
-            cout << "KFusionDepthFrameAllocator size request of " << size << " (should be " << 640*480*2 << ")" << endl;
-            throw runtime_error("KFusionDepthFrameAllocator got bad size request, currently only supports 640*480*2");
+            std::cout << "KFusionDepthFrameAllocator size request of " << size << " (should be " << 640*480*2 << ")" << std::endl;
+            throw std::runtime_error("KFusionDepthFrameAllocator got bad size request, currently only supports 640*480*2");
         }
 //        return depth_buffers_[depth_index];
     }
@@ -59,8 +59,8 @@ public:
     void *allocateFrameBuffer(int size)
     {
         if (size != 640*480*3) {
-            cout << "KFusionColorFrameAllocator size request of " << size << " (should be " << 640*480*3 << ")" << endl;
-            throw runtime_error("KFusionColorFrameAllocator got bad size request, currently only supports 640*480*3");
+            std::cout << "KFusionColorFrameAllocator size request of " << size << " (should be " << 640*480*3 << ")" << std::endl;
+            throw std::runtime_error("KFusionColorFrameAllocator got bad size request, currently only supports 640*480*3");
         }
         return rgb_buffer_;
     }
@@ -92,11 +92,14 @@ void *openni_threadfunc(void *arg)
 }
 
 OpenNIDevice::OpenNIDevice()
+    : openni_thread(0L)
 {
 }
 
 int OpenNIDevice::open()
 {
+
+    std::cout << "Opening " << std::endl;
 
     using namespace openni;
 
@@ -110,10 +113,15 @@ int OpenNIDevice::open()
     status = OpenNI::initialize();
 
     if (status != STATUS_OK) {
-        printf("OpenNI: Initialize failed:\n%s\n", OpenNI::getExtendedError());
+
+        std::cerr << "OpenNI: Initialize failed" << std::endl;
+
         OpenNI::shutdown();
+
         return 1;
     }
+
+    std::cout << "Initialized ... " << std::endl;
 
     // Check if a camera is connected
     Array<openni::DeviceInfo> deviceList;
@@ -121,26 +129,33 @@ int OpenNIDevice::open()
     int nr_devices = deviceList.getSize();
 
     if(nr_devices < 1) {
-        cout << "OpenNI: No devices found" << endl;
+        std::cout << "OpenNI: No devices found" << std::endl;
         OpenNI::shutdown();
         return 1;
     }
+
+    std::cout << "Devices " << nr_devices << std::endl;
 
     // Open device
     status = device.open(ANY_DEVICE);
 
     if (status != STATUS_OK) {
-        printf("OpenNI: Could not open device:\n%s\n", OpenNI::getExtendedError());
+        std::cerr << "OpenNI: Could not open device: " << OpenNI::getExtendedError() << std::endl;
         OpenNI::shutdown();
         return 1;
     }
+
+    std::cout << "Device " << device.getDeviceInfo().getName() << std::endl;
 
     // Create depth stream
     if (device.getSensorInfo(SENSOR_DEPTH) != NULL) {
         status = depth_stream.create(device, SENSOR_DEPTH);
         if (status != STATUS_OK) {
-            printf("OpenNI: Could not create depth stream\n%s\n", OpenNI::getExtendedError());
+
+            std::cerr << "OpenNI: Could not create depth stream " <<  OpenNI::getExtendedError() << std::endl;
+
             OpenNI::shutdown();
+
             return 1;
         }
     }
@@ -149,7 +164,7 @@ int OpenNIDevice::open()
     if (device.getSensorInfo(SENSOR_COLOR) != NULL) {
         status = color_stream.create(device, SENSOR_COLOR);
         if (status != STATUS_OK) {
-            printf("OpenNI: Could not create color stream\n%s\n", OpenNI::getExtendedError());
+            std::cerr << "OpenNI: Could not create color stream" << OpenNI::getExtendedError() << std::endl;
             OpenNI::shutdown();
             return 1;
         }
@@ -162,7 +177,7 @@ int OpenNIDevice::open()
     depth_mode.setFps(30);
     status = depth_stream.setVideoMode(depth_mode);
     if (status != STATUS_OK) {
-        printf("OpenNI: Could not set depth video mode:\n%s\n", OpenNI::getExtendedError());
+        std::cerr << "OpenNI: Could not set depth video mode:" << OpenNI::getExtendedError() << std::endl;
         OpenNI::shutdown();
         return 1;
     }
@@ -174,7 +189,7 @@ int OpenNIDevice::open()
     color_mode.setFps(30);
     status = color_stream.setVideoMode(color_mode);
     if (status != STATUS_OK) {
-        printf("OpenNI: Could not set color video mode:\n%s\n", OpenNI::getExtendedError());
+        std::cerr  << "OpenNI: Could not set color video mode:" << OpenNI::getExtendedError() << std::endl;
         OpenNI::shutdown();
         return 1;
     }
@@ -254,10 +269,12 @@ int OpenNIDevice::open()
     // Start spawn thread running openni_threadfunc to poll for new frames
     int res = pthread_create(&openni_thread, NULL, openni_threadfunc, NULL);
     if(res) {
-        cout << "error starting kinect thread " << res << endl;
+        std::cout << "error starting kinect thread " << res << std::endl;
         OpenNI::shutdown();
         return 1;
     }
+
+    std::cout << "Ready!" << std::endl;
 
     return 0;
 }
