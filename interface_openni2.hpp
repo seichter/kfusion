@@ -23,7 +23,7 @@ public:
     OpenNIDevice();
 
     int open();
-    bool available() const;
+    bool available() const { return true; }
     int update();
     void close();
 
@@ -36,6 +36,8 @@ public:
     void setDepthBuffer();
 
     openni::VideoStream& getDepthStream();
+
+    virtual ~OpenNIDevice() {}
 };
 
 #endif

@@ -87,23 +87,23 @@ configure_file(interface_config.hpp.cmake
     ${CMAKE_BINARY_DIR}/include/interface_config.hpp
     )
 
-add_executable(kfusion_kinect
+add_executable(kfusion_scan
+    ${CMAKE_BINARY_DIR}/include/interface_config.hpp
     kinect.cpp
     interface.h
     interface.cpp
     interface_config.hpp.cmake
-    ${CMAKE_BINARY_DIR}/include/interface_config.hpp
     ${kfusion_srcs}
     )
 
 
-set_target_properties(kfusion_kinect PROPERTIES
+set_target_properties(kfusion_scan PROPERTIES
     INCLUDE_DIRECTORIES
     "${kfusion_incs};${CMAKE_BINARY_DIR}/include"
     )
 
 target_link_libraries(
-    kfusion_kinect
+    kfusion_scan
     kfusion
     ${GLUT_LIBRARIES}
     ${OPENGL_LIBRARIES}
@@ -135,7 +135,7 @@ target_link_libraries(
 #    if(FREENECT_FOUND)
 #        include_directories(${kfusion_incs})
 #        add_definitions(-DLIBFREENECT_INTERFACE)
-#        add_executable(kfusion_kinect
+#        add_executable(kfusion_scan
 #            kinect.cpp
 #            interface.h
 #            interface.cpp
@@ -147,7 +147,7 @@ target_link_libraries(
 ##            interface_openni2.cpp
 #            )
 
-#        target_link_libraries(kfusion_kinect
+#        target_link_libraries(kfusion_scan
 #            kfusion
 #            ${GLUT_LIBRARIES}
 #            ${OPENGL_LIBRARIES}
@@ -158,7 +158,7 @@ target_link_libraries(
 #            )
 
 
-#        install(TARGETS kfusion_kinect kfusion_test
+#        install(TARGETS kfusion_scan kfusion_test
 #            RUNTIME DESTINATION bin
 #            LIBRARY DESTINATION bin
 #            )
@@ -168,10 +168,10 @@ target_link_libraries(
 
 #        include_directories($ENV{KINECTSDK10_DIR}/inc)
 #        add_definitions(-DMS_KINECT_INTERFACE)
-#        add_executable(kfusion_kinect
+#        add_executable(kfusion_scan
 #            kinect.cpp interface.h interface.cpp
 #            )
-#        target_link_libraries(kfusion_kinect kfusion ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} $ENV{KINECTSDK10_DIR}/lib/amd64/Kinect10.lib)
+#        target_link_libraries(kfusion_scan kfusion ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} $ENV{KINECTSDK10_DIR}/lib/amd64/Kinect10.lib)
 #    endif()
 
 #endif()

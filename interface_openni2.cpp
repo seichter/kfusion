@@ -91,6 +91,10 @@ void *openni_threadfunc(void *arg)
     return NULL;
 }
 
+OpenNIDevice::OpenNIDevice()
+{
+}
+
 int OpenNIDevice::open()
 {
 

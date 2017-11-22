@@ -33,17 +33,15 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <cstdlib>
 #include <cstring>
 
-
 #ifdef __APPLE__
-#include <GLUT/glut.h>
+    #include <GLUT/glut.h>
 #elif defined(WIN32)
 #define GLUT_NO_LIB_PRAGMA
-#include <glut.h>
+    #include <glut.h>
 #else
-#include <GL/glut.h>
+    #include <GL/glut.h>
 #endif
 
-using namespace std;
 using namespace TooN;
 
 KFusion kfusion;
@@ -142,7 +140,7 @@ void display(void){
     if(counter % 50 == 0){
         Stats.print();
         Stats.reset();
-        cout << endl;
+        std::cout << std::endl;
     }
 
     glutSwapBuffers();
@@ -219,13 +217,13 @@ int main(int argc, char ** argv) {
 
     // Search for --help argument
     for (int i = 0; i < argc; ++i) {
-        if (string(argv[i]) == "--help") {
-            cout << "Usage: kinect [size] [dist_threshold] [normal_threshold]" << endl;
-            cout << endl;
-            cout << "Defaults:" << endl;
-            cout << "  size: " << default_size << endl;
-            cout << "  dist_threshold: " << config.dist_threshold << endl;
-            cout << "  normal_threshold: " << config.normal_threshold << endl;
+        if (std::string(argv[i]) == "--help") {
+            std::cout << "Usage: kinect [size] [dist_threshold] [normal_threshold]" << std::endl;
+            std::cout << std::endl;
+            std::cout << "Defaults:" << std::endl;
+            std::cout << "  size: " << default_size << std::endl;
+            std::cout << "  dist_threshold: " << config.dist_threshold << std::endl;
+            std::cout << "  normal_threshold: " << config.normal_threshold << std::endl;
             return 0;
         }
     }
@@ -285,8 +283,8 @@ int main(int argc, char ** argv) {
         return 1;
     }
 
-    cout << "Using depthImage size: " << depthImage[0].size.x*depthImage[0].size.y * sizeof(uint16_t) << " bytes " << endl;
-    cout << "Using rgbImage size: " << rgbImage.size.x*rgbImage.size.y * sizeof(uchar3) << " bytes " << endl;
+    std::cout << "Using depthImage size: " << depthImage[0].size.x*depthImage[0].size.y * sizeof(uint16_t) << " bytes " << std::endl;
+    std::cout << "Using rgbImage size: " << rgbImage.size.x*rgbImage.size.y * sizeof(uchar3) << " bytes " << std::endl;
 
     memset(depthImage[0].data(), 0, depthImage[0].size.x*depthImage[0].size.y * sizeof(uint16_t));
     memset(depthImage[1].data(), 0, depthImage[1].size.x*depthImage[1].size.y * sizeof(uint16_t));
@@ -294,8 +292,20 @@ int main(int argc, char ** argv) {
 
     uint16_t * buffers[2] = {depthImage[0].data(), depthImage[1].data()};
 
-//    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceKinect);
-    rgbdDevice = RGBD::create(RGBD::kRGBDRealSense);
+    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceKinect);
+//    rgbdDevice = RGBD::create(RGBD::kRGBDRealSense);
+//    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceOpenNI2);
+
+
+
+
+    if (rgbdDevice == 0L) {
+
+        std::cerr << "no capture device" << std::endl;
+
+        return -1;
+
+    }
 
     rgbdDevice->setBuffers(buffers, (unsigned char *)rgbImage.data());
 
