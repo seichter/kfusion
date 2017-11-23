@@ -23,6 +23,8 @@ class RealSenseDevice : public RGBD {
 
     float depthScale;
 
+    rs_intrinsics intrinsics;
+
     // RGBD interface
 public:
 
@@ -40,6 +42,11 @@ public:
 
 
     void setDepthBuffer();
+
+    float focalX() const;
+    float focalY() const;
+
+
 };
 
 

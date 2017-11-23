@@ -249,6 +249,7 @@ int main(int argc, char ** argv) {
 //    config.inputSize = make_uint2(640,480);
 
     config.camera =  make_float4(531.15/2, 531.15/2, 640/4, 480/4);
+//    config.camera =  make_float4(614.221/2, 614.221/2, 640/4, 480/4);
 
     // config.iterations is a vector<int>, the length determines
     // the number of levels to be used in tracking
@@ -261,6 +262,17 @@ int main(int argc, char ** argv) {
     config.normal_threshold = (argc > 3 ) ? atof(argv[3]) : config.normal_threshold;
 
     initPose = SE3<float>(makeVector(size/2, size/2, 0, 0, 0, 0));
+
+
+    //    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceKinect);
+        rgbdDevice = RGBD::create(RGBD::kRGBDRealSense);
+    //    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceOpenNI2);
+
+    if (rgbdDevice == 0L) {
+            std::cerr << "no capture device" << std::endl;
+            return -1;
+        }
+
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE );
@@ -292,20 +304,7 @@ int main(int argc, char ** argv) {
 
     uint16_t * buffers[2] = {depthImage[0].data(), depthImage[1].data()};
 
-//    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceKinect);
-    rgbdDevice = RGBD::create(RGBD::kRGBDRealSense);
-//    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceOpenNI2);
 
-
-
-
-    if (rgbdDevice == 0L) {
-
-        std::cerr << "no capture device" << std::endl;
-
-        return -1;
-
-    }
 
     rgbdDevice->setBuffers(buffers, (unsigned char *)rgbImage.data());
 

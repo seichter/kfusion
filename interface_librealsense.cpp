@@ -52,9 +52,9 @@ int RealSenseDevice::open()
 
     dev = rs_get_device(ctx, 0, &e);
 
-    std::cout <<  rs_get_device_name(dev, &e) << std::endl;
-    std::cout <<  rs_get_device_serial(dev, &e) << std::endl;
-    std::cout <<  rs_get_device_firmware_version(dev, &e) << std::endl;
+    std::cout << "Realsense Device: " << rs_get_device_name(dev, &e) << std::endl;
+    std::cout << "Realsense Serial: " << rs_get_device_serial(dev, &e) << std::endl;
+    std::cout << "Realsense FW ver: " << rs_get_device_firmware_version(dev, &e) << std::endl;
 
     int framerate = 30;
     rs_enable_stream(dev, depthStream, 0, 0, RS_FORMAT_Z16, framerate, &e);
@@ -64,7 +64,6 @@ int RealSenseDevice::open()
 
     rs_enable_stream(dev, colorStream, depthWidth, depthHeight, RS_FORMAT_RGB8, framerate, &e);
 
-    rs_intrinsics intrinsics;
 
     rs_get_stream_intrinsics(dev,colorStream,&intrinsics,0);
 
@@ -134,7 +133,7 @@ void RealSenseDevice::setDepthBuffer() {
 
     for (size_t i = 0; i < depthBufferSize;i++) {
         //        depth_buffer[depth_index][i] = 1 / (depth_buffer[depth_index][i] + 1);
-//        depth_buffer[depth_index][i] ;
+//        depth_buffer[depth_index][i] -= 1;
     }
 
     const unsigned char* rgbPtr = (const unsigned char*)rs_get_frame_data(dev, colorStream, &e);
@@ -144,6 +143,18 @@ void RealSenseDevice::setDepthBuffer() {
 
     gotDepth = true;
 }
+
+float RealSenseDevice::focalX() const
+{
+    return intrinsics.fx;
+}
+
+float RealSenseDevice::focalY() const
+{
+    return intrinsics.fy;
+}
+
+
 
 void RealSenseDevice::close()
 {
