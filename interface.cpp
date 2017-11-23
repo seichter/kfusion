@@ -533,7 +533,9 @@ int GetKinectFrame() {
     #include "interface_openni2.hpp"
 #endif
 
-
+#if defined(KFUSION_INTERFACE_HAVE_LIBREALSENSE)
+    #include "interface_librealsense.hpp"
+#endif
 
 //#include "interface_librealsense.hpp"
 
@@ -553,9 +555,12 @@ RGBD *RGBD::create(RGBD::RGBDDevice device, const char *flags) {
         break;
 #endif
 
-        //    case RGBDDevice::kRGBDRealSense:
-//        return new RealSenseDevice();
-//        break;
+#if defined(KFUSION_INTERFACE_HAVE_LIBREALSENSE)
+    case RGBD::kRGBDRealSense:
+        return new RealSenseDevice();
+        break;
+#endif
+
     default:
         break;
     }

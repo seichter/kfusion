@@ -24,8 +24,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
-
-
 typedef unsigned short uint16_t;
 
 class RGBD {
@@ -52,6 +50,12 @@ public:
     virtual int update() = 0;
     virtual void close() = 0;
 
+    /**
+     * @brief create a RGBD capture device
+     * @param device device type / backend
+     * @param flags initial flags for the backend
+     * @return instance of a RGBD capture device (null otherwise)
+     */
     static RGBD* create(RGBDDevice device,const char* flags = "");
 
     void setBuffers(uint16_t * dBuffer[2], unsigned char * rgbBuffer) {
@@ -70,12 +74,5 @@ public:
     }
 
 };
-
-
-
-//int InitKinect( uint16_t * depth_buffer[2], unsigned char * rgb_buffer );
-//bool KinectFrameAvailable();
-//int GetKinectFrame();
-//void CloseKinect();
 
 #endif

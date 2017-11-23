@@ -77,7 +77,6 @@ int RealSenseDevice::open()
               << " coeff1:" << intrinsics.coeffs[1]
               << " coeff2:" << intrinsics.coeffs[2]
               << " coeff3:" << intrinsics.coeffs[3]
-
               << std::endl;
 
 
@@ -135,7 +134,7 @@ void RealSenseDevice::setDepthBuffer() {
 
     for (size_t i = 0; i < depthBufferSize;i++) {
         //        depth_buffer[depth_index][i] = 1 / (depth_buffer[depth_index][i] + 1);
-        depth_buffer[depth_index][i] *= 1;
+//        depth_buffer[depth_index][i] ;
     }
 
     const unsigned char* rgbPtr = (const unsigned char*)rs_get_frame_data(dev, colorStream, &e);

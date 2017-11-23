@@ -17,7 +17,7 @@ find_package(CUDA REQUIRED)
 # capture libs for depth cameras
 find_package(Freenect)
 find_package(OpenNI2)
-#find_package(LibRealSense)
+find_package(LibRealSense)
 
 # general IO
 include_directories(
@@ -60,7 +60,7 @@ set(kfusion_srcs)
 
 option(KFUSION_SCAN_ENABLE_FREENECT "Enable Kinect/Freenect Interface" OFF)
 option(KFUSION_SCAN_ENABLE_OPENNI2 "Enable Kinect/OpenNI2 Interface" OFF)
-#option(KFUSION_SCAN_ENABLE_FREENECT "Enable Kinect/Freenect Interface" OFF)
+option(KFUSION_SCAN_ENABLE_REALSENSE "Enable Realsense Interface" OFF)
 
 
 if (FREENECT_FOUND AND KFUSION_SCAN_ENABLE_FREENECT)
@@ -80,6 +80,18 @@ if (OPENNI2_FOUND AND KFUSION_SCAN_ENABLE_OPENNI2)
     list(APPEND kfusion_srcs interface_openni2.hpp interface_openni2.cpp)
 
     set(KFUSION_INTERFACE_HAVE_OPENNI2 TRUE)
+
+endif()
+
+
+if (REALSENSE_FOUND AND KFUSION_SCAN_ENABLE_REALSENSE)
+
+    list(APPEND kfusion_libs ${REALSENSE_LIBRARIES})
+    list(APPEND kfusion_incs ${REALSENSE_INCLUDE_PATHS})
+    list(APPEND kfusion_srcs interface_librealsense.hpp interface_librealsense.cpp)
+
+    set(KFUSION_INTERFACE_HAVE_LIBREALSENSE TRUE)
+
 
 endif()
 
