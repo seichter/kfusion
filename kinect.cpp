@@ -34,12 +34,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <cstring>
 
 #ifdef __APPLE__
-    #include <GLUT/glut.h>
+#include <GLUT/glut.h>
 #elif defined(WIN32)
 #define GLUT_NO_LIB_PRAGMA
-    #include <glut.h>
+#include <glut.h>
 #else
-    #include <GL/glut.h>
+#include <GL/glut.h>
 #endif
 
 using namespace TooN;
@@ -201,7 +201,7 @@ void reshape(int width, int height){
 }
 
 void exitFunc(void){
-//    CloseKinect();
+    //    CloseKinect();
 
     rgbdDevice->close();
     delete rgbdDevice;
@@ -234,7 +234,7 @@ int main(int argc, char ** argv) {
     // everything else is derived from that.
     // config.volumeSize = make_uint3(64);
     // config.volumeSize = make_uint3(128);
-//    config.volumeSize = make_uint3(256);
+    //    config.volumeSize = make_uint3(256);
     config.volumeSize = make_uint3(512);
 
     // these are physical dimensions in meters
@@ -246,10 +246,10 @@ int main(int argc, char ** argv) {
 
     // change the following parameters for using 640 x 480 input images
     config.inputSize = make_uint2(320,240);
-//    config.inputSize = make_uint2(640,480);
+    //    config.inputSize = make_uint2(640,480);
 
     config.camera =  make_float4(531.15/2, 531.15/2, 640/4, 480/4);
-//    config.camera =  make_float4(614.221/2, 614.221/2, 640/4, 480/4);
+    //    config.camera =  make_float4(614.221/2, 614.221/2, 640/4, 480/4); //
 
     // config.iterations is a vector<int>, the length determines
     // the number of levels to be used in tracking
@@ -265,13 +265,13 @@ int main(int argc, char ** argv) {
 
 
     //    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceKinect);
-        rgbdDevice = RGBD::create(RGBD::kRGBDRealSense);
-    //    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceOpenNI2);
+//    rgbdDevice = RGBD::create(RGBD::kRGBDRealSense);
+        rgbdDevice = RGBD::create(RGBD::kRGBDDeviceOpenNI2);
 
     if (rgbdDevice == 0L) {
-            std::cerr << "no capture device" << std::endl;
-            return -1;
-        }
+        std::cerr << "no capture device" << std::endl;
+        return -1;
+    }
 
 
     glutInit(&argc, argv);
@@ -304,16 +304,12 @@ int main(int argc, char ** argv) {
 
     uint16_t * buffers[2] = {depthImage[0].data(), depthImage[1].data()};
 
-
-
     rgbdDevice->setBuffers(buffers, (unsigned char *)rgbImage.data());
 
     if (rgbdDevice->open()){
         cudaDeviceReset();
         return 1;
     }
-
-
 
     kfusion.setPose(toMatrix4(initPose));
 
@@ -329,8 +325,6 @@ int main(int argc, char ** argv) {
     glutIdleFunc(idle);
 
     glutMainLoop();
-
-//    CloseKinect();
 
     return 0;
 }

@@ -75,15 +75,10 @@ public:
 // but there is no direct benefit of it.
 void *openni_threadfunc(void *arg)
 {
-
     OpenNIDevice* device = static_cast<OpenNIDevice*>(arg);
 
-
     while(!device->stopped()){
-
         device->update();
-
-
     }
 
     device->close();
@@ -93,6 +88,8 @@ void *openni_threadfunc(void *arg)
 
 OpenNIDevice::OpenNIDevice()
     : openni_thread(0L)
+    , die(false)
+    , gotDepth(false)
 {
 }
 
@@ -145,7 +142,11 @@ int OpenNIDevice::open()
         return 1;
     }
 
-    std::cout << "Device " << device.getDeviceInfo().getName() << std::endl;
+    std::cout << "Device "
+              << device.getDeviceInfo().getVendor() << " "
+              << device.getDeviceInfo().getName() << " "
+              << device.getDeviceInfo().getUri()
+              << std::endl;
 
     // Create depth stream
     if (device.getSensorInfo(SENSOR_DEPTH) != NULL) {
@@ -158,10 +159,32 @@ int OpenNIDevice::open()
 
             return 1;
         }
+
+        const openni::SensorInfo* si = device.getSensorInfo(SENSOR_DEPTH);
+
+        const Array<openni::VideoMode>& vms = si->getSupportedVideoModes();
+
+         for (int i = 0; i < vms.getSize();i++) {
+             std::cout << "Depth " << vms[i].getResolutionX() << "x" << vms[i].getResolutionY()
+                       << " " << vms[i].getFps() << " " << vms[i].getPixelFormat()
+                       << std::endl;
+         }
+
     }
 
     // Create color stream
     if (device.getSensorInfo(SENSOR_COLOR) != NULL) {
+
+       const openni::SensorInfo* si = device.getSensorInfo(SENSOR_COLOR);
+
+       const Array<openni::VideoMode>& vms = si->getSupportedVideoModes();
+
+        for (int i = 0; i < vms.getSize();i++) {
+            std::cout << vms[i].getResolutionX() << "x" << vms[i].getResolutionY()
+                      << " " << vms[i].getFps() << " " << vms[i].getPixelFormat()
+                      << std::endl;
+        }
+
         status = color_stream.create(device, SENSOR_COLOR);
         if (status != STATUS_OK) {
             std::cerr << "OpenNI: Could not create color stream" << OpenNI::getExtendedError() << std::endl;
@@ -170,13 +193,19 @@ int OpenNIDevice::open()
         }
     }
 
+
+    std::cout << "Line " << __LINE__ << std::endl;
+
     // Choose what depth format we want from the camera
     VideoMode depth_mode;
+
     depth_mode.setPixelFormat(PIXEL_FORMAT_DEPTH_1_MM);
     depth_mode.setResolution(640, 480);
     depth_mode.setFps(30);
+
     status = depth_stream.setVideoMode(depth_mode);
     if (status != STATUS_OK) {
+
         std::cerr << "OpenNI: Could not set depth video mode:" << OpenNI::getExtendedError() << std::endl;
         OpenNI::shutdown();
         return 1;
@@ -212,6 +241,21 @@ int OpenNIDevice::open()
         return 1;
     }
 
+
+    std::cout << "Line " << __LINE__ << std::endl;
+
+
+    // Use allocator to have OpenNI write directly into our color buffer
+    status = color_stream.setFrameBuffersAllocator(colorAlloc);
+
+    if (status != STATUS_OK) {
+        printf("OpenNI: Could not set color frame buffer allocator\n%s\n", OpenNI::getExtendedError());
+        OpenNI::shutdown();
+        return 1;
+    }
+
+#if 1
+
     // Disable depth mirroring (we want to see the perspective of the camera)
     status = depth_stream.setMirroringEnabled(false);
 
@@ -230,6 +274,7 @@ int OpenNIDevice::open()
         return 1;
     }
 
+
     // Use allocator to have OpenNI write directly into our depth buffers
     status = depth_stream.setFrameBuffersAllocator(depthAlloc);
 
@@ -239,38 +284,42 @@ int OpenNIDevice::open()
         return 1;
     }
 
-    // Use allocator to have OpenNI write directly into our color buffer
-    status = color_stream.setFrameBuffersAllocator(colorAlloc);
 
-    if (status != STATUS_OK) {
-        printf("OpenNI: Could not set color frame buffer allocator\n%s\n", OpenNI::getExtendedError());
-        OpenNI::shutdown();
-        return 1;
-    }
 
-    // Start depth
-    status = depth_stream.start();
-
-    if (status != STATUS_OK) {
-        printf("OpenNI: Could not start the depth stream\n%s\n", OpenNI::getExtendedError());
-        OpenNI::shutdown();
-        return 1;
-    }
+    std::cout << "Line " << __LINE__ << std::endl;
+#endif
 
     // Start color
     status = color_stream.start();
 
     if (status != STATUS_OK) {
-        printf("OpenNI: Could not start the color stream\n%s\n", OpenNI::getExtendedError());
+        std::cerr << "OpenNI: Could not start the color stream" << OpenNI::getExtendedError() << std::endl;
         OpenNI::shutdown();
         return 1;
     }
 
-    // Start spawn thread running openni_threadfunc to poll for new frames
-    int res = pthread_create(&openni_thread, NULL, openni_threadfunc, NULL);
-    if(res) {
-        std::cout << "error starting kinect thread " << res << std::endl;
+
+    std::cout << "Line " << __LINE__ << std::endl;
+
+    // Start depth
+    status = depth_stream.start();
+
+    if (status != STATUS_OK) {
+        std::cerr << "OpenNI: Could not start the depth stream " << OpenNI::getExtendedError() << std::endl;
         OpenNI::shutdown();
+        return 1;
+    }
+
+    std::cout << "Line " << __LINE__ << std::endl;
+
+    // Start spawn thread running openni_threadfunc to poll for new frames
+    int res = pthread_create(&openni_thread, NULL, openni_threadfunc, this);
+    if(res) {
+
+        std::cerr << "error starting OpenNI thread " << res << std::endl;
+
+        OpenNI::shutdown();
+
         return 1;
     }
 
