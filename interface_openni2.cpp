@@ -22,7 +22,7 @@ public:
             std::cout << "KFusionDepthFrameAllocator size request of " << size << " (should be " << 640*480*2 << ")" << std::endl;
             throw std::runtime_error("KFusionDepthFrameAllocator got bad size request, currently only supports 640*480*2");
         }
-//        return depth_buffers_[depth_index];
+        return depth_buffers_[0];
     }
 
     // We have static buffers, nothing to do.
@@ -51,42 +51,22 @@ public:
     void freeFrameBuffer(void *data) {}
 };
 
-// This thread continuously reads depth and RGB images from the camera
-// using the blocking readFrame().
-// We could have used OpenNI::waitForAnyStream() as an alternative,
-// but there is no direct benefit of it.
-void *openni_threadfunc(void *arg)
-{
-
-    OpenNIDevice* device = static_cast<OpenNIDevice*>(arg);
-
-
-    while(!device->stopped()){
-
-        device->update();
-
-
-    }
-
-    device->close();
-
-    return NULL;
-}
-
 struct CaptureThread {
 
-	OpenNIDevice* _device;
+	OpenNIDevice& _device;
 
-	CaptureThread(OpenNIDevice* dev) : _device(dev) {
+	CaptureThread(OpenNIDevice& dev) : _device(dev) {
 
 	}
-
-
+	
 	void operator()() {
-		while (_device && !_device->stopped()) {
-			_device->update();
+
+		while (!_device.stopped()) {
+			_device.update();
 		}
-		_device->close();
+
+		// close stuff
+		// _device->close();
 	}
 
 };
@@ -113,7 +93,7 @@ int OpenNIDevice::open()
 
     if (status != STATUS_OK) {
 
-        std::cerr << "OpenNI: Initialize failed" << std::endl;
+        std::cerr << "OpenNI: Initialize failed: '" << OpenNI::getExtendedError() << "'" << std::endl;
 
         OpenNI::shutdown();
 
@@ -265,25 +245,9 @@ int OpenNIDevice::open()
         return 1;
     }
 
-
-#if 0
-
-    // Start spawn thread running openni_threadfunc to poll for new frames
-    int res = pthread_create(&openni_thread, NULL, openni_threadfunc, NULL);
-    if(res) {
-        std::cout << "error starting kinect thread " << res << std::endl;
-        OpenNI::shutdown();
-        return 1;
-    }
-
-#endif
-
-
-	capture_thread = std::thread(CaptureThread(this));
+	// create capture thread
+	capture_thread = std::thread(CaptureThread(*this));
 	
-
-    std::cout << "Ready!" << std::endl;
-
     return 0;
 }
 
@@ -295,48 +259,36 @@ int OpenNIDevice::update() {
     // Our FrameAllocators make sure the data lands in our buffers;
     // that's why we never have to use the VideoFrameRefs.
 
+#if 0
     // Next depth frame
     openni::VideoFrameRef depthFrame;
     status = depth_stream.readFrame(&depthFrame);
     if (status != openni::STATUS_OK) {
         std::cerr << "OpenNI: readFrame failed " << openni::OpenNI::getExtendedError() << std::endl;
-//        break;
     } else {
-        depth_index = (depth_index+1) % 2; // Flip double buffers
+        depth_index = (depth_index + 1) % 2; // Flip double buffers
         gotDepth = true;
     }
+#endif
 
     // Next RGB frame
     openni::VideoFrameRef colorFrame;
     status = color_stream.readFrame(&colorFrame);
     if (status != openni::STATUS_OK) {
         std::cerr << "OpenNI: readFrame failed " << openni::OpenNI::getExtendedError() << std::endl;
-//        break;
     }
 
 	return 0;
 }
 
 void OpenNIDevice::close() {
-    die = true;
-
-    //pthread_join(openni_thread, NULL);
-
+    
+	die = true;
+	
 	capture_thread.join();
-
 
     depth_stream.destroy();
     color_stream.destroy();
     device.close();
     openni::OpenNI::shutdown();
 }
-
-//bool KinectFrameAvailable() {
-//    bool result = gotDepth;
-//    gotDepth = false;
-//    return result;
-//}
-
-//int GetKinectFrame() {
-//    return depth_index;
-//}

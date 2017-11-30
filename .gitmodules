@@ -1,3 +1,3 @@
 [submodule "thirdparty/TooN"]
 	path = thirdparty/TooN
-	url = git://github.com/edrosten/TooN.git
+	url = git://github.com/seichter/TooN.git

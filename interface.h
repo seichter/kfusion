@@ -31,8 +31,6 @@ protected:
 
     uint16_t *depth_buffer[2];
     unsigned char *rgb_buffer;
-
-
     int depth_index;
 
 public:
@@ -42,7 +40,7 @@ public:
         kRGBDRealSense
     };
 
-    RGBD() {}
+    RGBD() : depth_index(0) {}
     virtual ~RGBD() {}
 
     virtual int open() = 0;
@@ -72,6 +70,10 @@ public:
     int currentDepthBufferIndex() const {
         return depth_index;
     }
+
+	void swapDepthBuffer() {
+		depth_index = (depth_index + 1) % 2;
+	}
 
 };
 
