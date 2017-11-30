@@ -266,7 +266,8 @@ int OpenNIDevice::update() {
     if (status != openni::STATUS_OK) {
         std::cerr << "OpenNI: readFrame failed " << openni::OpenNI::getExtendedError() << std::endl;
     } else {
-        depth_index = (depth_index + 1) % 2; // Flip double buffers
+
+		this->swapDepthBuffer();
         gotDepth = true;
     }
 #endif
@@ -283,8 +284,7 @@ int OpenNIDevice::update() {
 
 void OpenNIDevice::close() {
     
-	die = true;
-	
+	die = true;	
 	capture_thread.join();
 
     depth_stream.destroy();
