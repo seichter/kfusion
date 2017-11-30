@@ -13,7 +13,6 @@ find_package(GLUT REQUIRED)
 find_package(Threads REQUIRED)
 find_package(CUDA REQUIRED)
 
-
 # capture libs for depth cameras
 find_package(Freenect)
 find_package(OpenNI2)
@@ -37,22 +36,33 @@ add_library(kfusion STATIC
     )
 
 
-message("'OpenNI2: ${OPENNI2_INCLUDES}'")
-message("'CUDA: ${CUDA_INCLUDE_DIRS}'")
+target_link_libraries(kfusion
+	${CUDA_LIBRARIES}
+	)
 
-set_target_properties(kfusion PROPERTIES POSITION_INDEPENDENT_CODE ON)
+#message("'OpenNI2: ${OPENNI2_INCLUDES}'")
+#message("'CUDA: ${CUDA_INCLUDE_DIRS}'")
+#message("'GLUT: ${GLUT_INCLUDE_DIR}'")
 
-set_target_properties(kfusion PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+#
+# skip these for Windows
+#
+if (NOT WIN32)
+
+	set_target_properties(kfusion PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+	set_target_properties(kfusion PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+
+endif()
 
 set_target_properties(kfusion PROPERTIES INCLUDE_DIRECTORIES "${CUDA_INCLUDE_DIRS};${TOON_INCLUDE_PATHS}")
 
 target_compile_features(kfusion PUBLIC cxx_std_11)
 
-
 #
+# Libs
 #
-#
-set(kfusion_libs)
+set(kfusion_libs ${CUDA_CUDA_LIBRAY})
 set(kfusion_incs "${CUDA_INCLUDE_DIRS};${TOON_INCLUDE_PATHS}")
 set(kfusion_defs)
 set(kfusion_srcs)
@@ -111,7 +121,7 @@ add_executable(kfusion_scan
 
 set_target_properties(kfusion_scan PROPERTIES
     INCLUDE_DIRECTORIES
-    "${kfusion_incs};${CMAKE_BINARY_DIR}/include"
+    "${kfusion_incs};${CMAKE_BINARY_DIR}/include;${GLUT_INCLUDE_DIR}"
     )
 
 target_link_libraries(
@@ -124,9 +134,17 @@ target_link_libraries(
 
 # message("LIBS : ${kfusion_libs}")
 # message("LIBS : ${OPENGL_LIBRARIES}")
+# message("LIBS : ${GLUT_LIBRARIES}")
+# message("CUDA : ${CUDA_LIBRARIES}")
+
 
 add_executable(kfusion_test
     test.cpp
+    )
+
+set_target_properties(kfusion_test PROPERTIES
+    INCLUDE_DIRECTORIES
+    "${kfusion_incs};${CMAKE_BINARY_DIR}/include;${GLUT_INCLUDE_DIR}"
     )
 
 target_link_libraries(
@@ -134,5 +152,6 @@ target_link_libraries(
     kfusion
     ${GLUT_LIBRARIES}
     ${OPENGL_LIBRARIES}
+	${CUDA_LIBRARIES}
     )
 

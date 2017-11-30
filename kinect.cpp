@@ -37,7 +37,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     #include <GLUT/glut.h>
 #elif defined(WIN32)
 #define GLUT_NO_LIB_PRAGMA
-    #include <glut.h>
+    #include <GL/glut.h>
 #else
     #include <GL/glut.h>
 #endif
@@ -265,8 +265,8 @@ int main(int argc, char ** argv) {
 
 
     //    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceKinect);
-        rgbdDevice = RGBD::create(RGBD::kRGBDRealSense);
-    //    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceOpenNI2);
+    //    rgbdDevice = RGBD::create(RGBD::kRGBDRealSense);
+    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceOpenNI2);
 
     if (rgbdDevice == 0L) {
             std::cerr << "no capture device" << std::endl;

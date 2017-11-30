@@ -1,29 +1,11 @@
 #include "interface_openni2.hpp"
 
-
-
-
 #include <iostream>
 #include <stdexcept>
 
-//using namespace std;
-//using namespace openni;
-
-
-
-//Device device;
-//VideoStream depth_stream;
-//VideoStream color_stream;
-//bool gotDepth = false; // set to true as soon as the first depth frame is received
-//int depth_index = 0; // for flipping between the depth double buffers
-
-//pthread_t openni_thread; // thread for the readFrame() loop
-//volatile bool die = false; // tells the readFrame() loop to stop
-
-// We use OpenNI frame allocators to let it write new images directly
-// into our buffers (one for RGB and a double-buffer for depth) so that
-// we don't have to memcpy each frame.
-
+//
+// allocators
+// 
 class KFusionDepthFrameAllocator : public openni::VideoStream::FrameAllocator
 {
 private:
@@ -91,8 +73,25 @@ void *openni_threadfunc(void *arg)
     return NULL;
 }
 
+struct CaptureThread {
+
+	OpenNIDevice* _device;
+
+	CaptureThread(OpenNIDevice* dev) : _device(dev) {
+
+	}
+
+
+	void operator()() {
+		while (_device && !_device->stopped()) {
+			_device->update();
+		}
+		_device->close();
+	}
+
+};
+
 OpenNIDevice::OpenNIDevice()
-    : openni_thread(0L)
 {
 }
 
@@ -266,6 +265,9 @@ int OpenNIDevice::open()
         return 1;
     }
 
+
+#if 0
+
     // Start spawn thread running openni_threadfunc to poll for new frames
     int res = pthread_create(&openni_thread, NULL, openni_threadfunc, NULL);
     if(res) {
@@ -273,6 +275,12 @@ int OpenNIDevice::open()
         OpenNI::shutdown();
         return 1;
     }
+
+#endif
+
+
+	capture_thread = std::thread(CaptureThread(this));
+	
 
     std::cout << "Ready!" << std::endl;
 
@@ -305,11 +313,17 @@ int OpenNIDevice::update() {
         std::cerr << "OpenNI: readFrame failed " << openni::OpenNI::getExtendedError() << std::endl;
 //        break;
     }
+
+	return 0;
 }
 
 void OpenNIDevice::close() {
     die = true;
-    pthread_join(openni_thread, NULL);
+
+    //pthread_join(openni_thread, NULL);
+
+	capture_thread.join();
+
 
     depth_stream.destroy();
     color_stream.destroy();

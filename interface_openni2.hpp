@@ -2,9 +2,11 @@
 #define KFUSION_INTERFACE_OPENNI2
 
 #include <OpenNI.h>
-#include <pthread.h>
+// #include <pthread.h>
 
 #include "interface.h"
+
+#include <thread>
 
 class OpenNIDevice : public RGBD {
 
@@ -14,7 +16,8 @@ class OpenNIDevice : public RGBD {
 
     bool gotDepth;
 
-    pthread_t openni_thread;
+	std::thread capture_thread;
+
     bool die;
 
     // RGBD interface
