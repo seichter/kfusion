@@ -1,21 +1,34 @@
-#ifndef INTERFACE_KINECT_HPP
-#define INTERFACE_KINECT_HPP
+#ifndef INTERFACE_MSKINECT_HPP
+#define INTERFACE_MSKINECT_HPP
 
 
 #include "interface.h"
 
-#include <libfreenect/libfreenect.h>
-#include <pthread.h>
 
+#include <Windows.h>
+#include <NuiApi.h>
+
+#include <thread>
 
 
 class MSKinectDevice1 : public RGBD {
 
-    freenect_context *f_ctx;
-    freenect_device *f_dev;
+
+	HANDLE        m_hNextDepthFrameEvent;
+	HANDLE        m_hNextVideoFrameEvent;
+	HANDLE        m_pDepthStreamHandle;
+	HANDLE        m_pVideoStreamHandle;
+
+	INuiSensor * m_pSensor;
+
+	// thread handling
+	HANDLE        m_hThNuiProcess;
+	HANDLE        m_hEvNuiProcessStop;
+
+
+
     bool gotDepth;
 
-    pthread_t freenect_thread;
     bool die;
 
     // RGBD interface

@@ -17,6 +17,7 @@ find_package(CUDA REQUIRED)
 find_package(Freenect)
 find_package(OpenNI2)
 find_package(LibRealSense)
+find_package(KinectSDK)
 
 # general IO
 include_directories(
@@ -71,6 +72,7 @@ set(kfusion_srcs)
 option(KFUSION_SCAN_ENABLE_FREENECT "Enable Kinect/Freenect Interface" OFF)
 option(KFUSION_SCAN_ENABLE_OPENNI2 "Enable Kinect/OpenNI2 Interface" OFF)
 option(KFUSION_SCAN_ENABLE_REALSENSE "Enable Realsense Interface" OFF)
+option(KFUSION_SCAN_ENABLE_MSKINECT1 "Enable MS Kinect SDK 1.0" OFF)
 
 
 if (FREENECT_FOUND AND KFUSION_SCAN_ENABLE_FREENECT)
@@ -104,6 +106,18 @@ if (REALSENSE_FOUND AND KFUSION_SCAN_ENABLE_REALSENSE)
 
 
 endif()
+
+
+if (KinectSDK_FOUND AND KFUSION_SCAN_ENABLE_MSKINECT1)
+
+    list(APPEND kfusion_libs ${KinectSDK_LIBRARIES})
+    list(APPEND kfusion_incs ${KinectSDK_INCLUDE_DIRS})
+    list(APPEND kfusion_srcs interface_mskinect.hpp interface_mskinect.cpp)
+
+	set(KFUSION_INTERFACE_HAVE_MSKINECT1 TRUE)
+
+endif()
+
 
 configure_file(interface_config.hpp.cmake
     ${CMAKE_BINARY_DIR}/include/interface_config.hpp

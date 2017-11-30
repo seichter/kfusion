@@ -37,7 +37,8 @@ public:
     enum RGBDDevice {
         kRGBDDeviceKinect,
         kRGBDDeviceOpenNI2,
-        kRGBDRealSense
+        kRGBDRealSense,
+		kRGBDMSKinect1
     };
 
     RGBD() : depth_index(0) {}

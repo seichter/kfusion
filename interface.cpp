@@ -537,6 +537,10 @@ int GetKinectFrame() {
     #include "interface_librealsense.hpp"
 #endif
 
+#if defined(KFUSION_INTERFACE_HAVE_MSKINECT1)
+	#include "interface_mskinect.hpp"
+#endif
+
 //#include "interface_librealsense.hpp"
 
 
@@ -559,6 +563,12 @@ RGBD *RGBD::create(RGBD::RGBDDevice device, const char *flags) {
     case RGBD::kRGBDRealSense:
         return new RealSenseDevice();
         break;
+#endif
+
+#if defined(KFUSION_INTERFACE_HAVE_MSKINECT1)
+	case RGBD::kRGBDMSKinect1:
+		return new MSKinectDevice1();
+		break;
 #endif
 
     default:
