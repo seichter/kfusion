@@ -3,4 +3,4 @@ _darcs
 kinect
 test
 build
-*.txt.user
+*.txt.user*
