@@ -1,12 +1,11 @@
 #ifndef INTERFACE_LIBREALSENSE_HPP
 #define INTERFACE_LIBREALSENSE_HPP
 
-
-#include "interface.h"
-
 #include <librealsense/rs.h>
 #include <pthread.h>
-#include <iostream>
+
+
+#include "interface.h"
 
 
 class RealSenseDevice : public RGBD {

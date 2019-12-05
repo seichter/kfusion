@@ -31,7 +31,7 @@ protected:
 
     uint16_t *depth_buffer[2];
     unsigned char *rgb_buffer;
-    int depth_index;
+    int depth_index = 0;
 
 public:
     enum RGBDDevice {
@@ -41,8 +41,8 @@ public:
 		kRGBDMSKinect1
     };
 
-    RGBD() : depth_index(0) {}
-    virtual ~RGBD() {}
+    RGBD() = default;
+    virtual ~RGBD() = default;
 
     virtual int open() = 0;
     virtual bool available() const { return false; }

@@ -61,8 +61,6 @@ endif()
 
 set_target_properties(kfusion PROPERTIES INCLUDE_DIRECTORIES "${CUDA_INCLUDE_DIRS};${TOON_INCLUDE_PATHS}")
 
-target_compile_features(kfusion PUBLIC cxx_std_11)
-
 #
 # Libs
 #
@@ -146,7 +144,7 @@ target_link_libraries(
     kfusion
     ${GLUT_LIBRARIES}
     ${OPENGL_LIBRARIES}
-    ${kfusion_libs}
+	${kfusion_libs}
     )
 
 # message("LIBS : ${kfusion_libs}")
