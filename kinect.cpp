@@ -67,7 +67,7 @@ SE3<float> preTrans, trans, rot(makeVector(0.0, 0, 0, 0, 0, 0));
 bool redraw_big_view = false;
 
 
-RGBD* rgbdDevice;
+std::unique_ptr<RGBD> rgbdDevice;
 
 
 void display(void){
@@ -200,12 +200,10 @@ void reshape(int width, int height){
     glPixelZoom(1,-1);
 }
 
-void exitFunc(void){
-//    CloseKinect();
+void exitFunc(void)
+{
 
     rgbdDevice->close();
-    delete rgbdDevice;
-
     kfusion.Clear();
     cudaDeviceReset();
 }
@@ -218,7 +216,7 @@ int main(int argc, char ** argv) {
     // Search for --help argument
     for (int i = 0; i < argc; ++i) {
         if (std::string(argv[i]) == "--help") {
-            std::cout << "Usage: kinect [size] [dist_threshold] [normal_threshold]" << std::endl;
+            std::cout << "Usage: " << argv[0] << " [size] [dist_threshold] [normal_threshold]" << std::endl;
             std::cout << std::endl;
             std::cout << "Defaults:" << std::endl;
             std::cout << "  size: " << default_size << std::endl;
@@ -266,7 +264,7 @@ int main(int argc, char ** argv) {
 
     //    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceKinect);
     //    rgbdDevice = RGBD::create(RGBD::kRGBDRealSense);
-    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceOpenNI2);
+    rgbdDevice.reset(RGBD::create(RGBD::kRGBDDeviceOpenNI2));
 
     if (rgbdDevice == 0L) {
             std::cerr << "no capture device" << std::endl;
@@ -313,8 +311,6 @@ int main(int argc, char ** argv) {
         return 1;
     }
 
-
-
     kfusion.setPose(toMatrix4(initPose));
 
     // model rendering parameters
@@ -329,8 +325,6 @@ int main(int argc, char ** argv) {
     glutIdleFunc(idle);
 
     glutMainLoop();
-
-//    CloseKinect();
 
     return 0;
 }

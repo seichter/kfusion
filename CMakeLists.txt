@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 # use CMake detection of CUDA
 project(kfusion LANGUAGES CXX CUDA)
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # internal stuff
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
