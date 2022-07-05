@@ -45,10 +45,13 @@ int RealSenseDevice::open()
     rs_error *e = nullptr;
     ctx = rs_create_context(RS_API_VERSION, &e);
 
+    if (ctx == nullptr) {
+        std::cerr << "cannot instantiate RealSense API " << rs_get_error_message(e) << std::endl;
+    }
+
     int devices = rs_get_device_count(ctx, &e);
     if (devices == 0) {
-
-        std::cerr << "no realsense capture device" << std::endl;
+        std::cerr << "no realsense capture device " << rs_get_error_message(e) << std::endl;
         return 1;
     }
 
@@ -129,23 +132,29 @@ void RealSenseDevice::setDepthBuffer() {
 
     int next_buffer = (depth_index + 1) % 2;
 
-    const uint16_t* depthPtr = (const uint16_t*)rs_get_frame_data(dev, depthStream, &e);
     const size_t depthBufferSize = 640*480;
-    memcpy(depth_buffer[depth_index],depthPtr,depthBufferSize * sizeof(uint16_t));
 
-    //    uint16_t rescale = 1.f / depthScale;
+    const uint16_t* depthPtr = (const uint16_t*)rs_get_frame_data(dev, depthStream, &e);
 
-    for (size_t i = 0; i < depthBufferSize;i++) {
-        //        depth_buffer[depth_index][i] = 1 / (depth_buffer[depth_index][i] + 1);
-//        depth_buffer[depth_index][i] -= 1;
+    if (depthPtr) {
+
+        memcpy(depth_buffer[depth_index],depthPtr,depthBufferSize * sizeof(uint16_t));
+
+#if 0
+        //    uint16_t rescale = 1.f / depthScale;
+
+        for (size_t i = 0; i < depthBufferSize;i++) {
+                    depth_buffer[depth_index][i] = 1 / (depth_buffer[depth_index][i] + 1);
+            depth_buffer[depth_index][i] -= 1;
+        }
+#endif
+        const unsigned char* rgbPtr = (const unsigned char*)rs_get_frame_data(dev, colorStream, &e);
+        memcpy(rgb_buffer,rgbPtr,640*480*3);
+
+        depth_index = next_buffer;
+        gotDepth = true;
+
     }
-
-    const unsigned char* rgbPtr = (const unsigned char*)rs_get_frame_data(dev, colorStream, &e);
-    memcpy(rgb_buffer,rgbPtr,640*480*3);
-
-    depth_index = next_buffer;
-
-    gotDepth = true;
 }
 
 float RealSenseDevice::focalX() const

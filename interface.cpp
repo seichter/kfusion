@@ -562,7 +562,6 @@ RGBD *RGBD::create(RGBD::RGBDDevice device, const char *flags) {
 #if defined(KFUSION_INTERFACE_HAVE_LIBREALSENSE)
     case RGBD::kRGBDRealSense:
         return new RealSenseDevice();
-        break;
 #endif
 
 #if defined(KFUSION_INTERFACE_HAVE_MSKINECT1)
@@ -575,5 +574,5 @@ RGBD *RGBD::create(RGBD::RGBDDevice device, const char *flags) {
         break;
     }
 
-    return 0L;
+    return nullptr;
 }

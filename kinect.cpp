@@ -246,7 +246,8 @@ int main(int argc, char ** argv) {
     config.inputSize = make_uint2(320,240);
 //    config.inputSize = make_uint2(640,480);
 
-    config.camera =  make_float4(531.15/2, 531.15/2, 640/4, 480/4);
+    config.camera = make_float4(614.221, 614.221, 640/4, 480/4);
+//    config.camera =  make_float4(531.15/2, 531.15/2, 640/4, 480/4);
 //    config.camera =  make_float4(614.221/2, 614.221/2, 640/4, 480/4);
 
     // config.iterations is a vector<int>, the length determines
@@ -263,13 +264,14 @@ int main(int argc, char ** argv) {
 
 
     //    rgbdDevice = RGBD::create(RGBD::kRGBDDeviceKinect);
-    //    rgbdDevice = RGBD::create(RGBD::kRGBDRealSense);
-    rgbdDevice.reset(RGBD::create(RGBD::kRGBDDeviceOpenNI2));
+    rgbdDevice.reset(RGBD::create(RGBD::kRGBDRealSense));
+//    rgbdDevice.reset(RGBD::create(RGBD::kRGBDDeviceOpenNI2));
 
     if (rgbdDevice == 0L) {
             std::cerr << "no capture device" << std::endl;
             return -1;
         }
+
 
 
     glutInit(&argc, argv);
