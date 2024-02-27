@@ -2,16 +2,16 @@
 
 #include <iostream>
 
-void kinectdevice_depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
+void FreenectDevice_depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 {
-    KinectDevice * device = static_cast<KinectDevice*>(freenect_get_user(dev));
+    FreenectDevice * device = static_cast<FreenectDevice*>(freenect_get_user(dev));
     device->setDepthBuffer();
 }
 
-void *kinectdevice_freenect_threadfunc(void *arg)
+void *FreenectDevice_freenect_threadfunc(void *arg)
 {
 
-    KinectDevice* dev = static_cast<KinectDevice*>(arg);
+    FreenectDevice* dev = static_cast<FreenectDevice*>(arg);
 
     while(!dev->stopped()){
         int res = dev->update();
@@ -23,7 +23,7 @@ void *kinectdevice_freenect_threadfunc(void *arg)
     return NULL;
 }
 
-KinectDevice::KinectDevice()
+FreenectDevice::FreenectDevice()
     : RGBD()
     , f_ctx(0L)
     , f_dev(0L)
@@ -32,7 +32,7 @@ KinectDevice::KinectDevice()
 {
 }
 
-int KinectDevice::open()
+int FreenectDevice::open()
 {
     if (freenect_init(&f_ctx, NULL) < 0) {
         std::cerr << "freenect_init() failed" << std::endl;
@@ -61,7 +61,7 @@ int KinectDevice::open()
     depth_index = 0;
 
     // setup callbacks
-    freenect_set_depth_callback(f_dev, kinectdevice_depth_cb);
+    freenect_set_depth_callback(f_dev, FreenectDevice_depth_cb);
     freenect_set_depth_mode(f_dev, freenect_find_depth_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_REGISTERED));
     freenect_set_depth_buffer(f_dev, depth_buffer[depth_index]);
 
@@ -71,7 +71,7 @@ int KinectDevice::open()
     freenect_start_depth(f_dev);
     freenect_start_video(f_dev);
 
-    int res = pthread_create(&freenect_thread, NULL, kinectdevice_freenect_threadfunc, this);
+    int res = pthread_create(&freenect_thread, NULL, FreenectDevice_freenect_threadfunc, this);
 
     if(res){
         std::cerr << "error starting kinect thread " << res << std::endl;
@@ -81,17 +81,17 @@ int KinectDevice::open()
     return 0;
 }
 
-bool KinectDevice::available() const
+bool FreenectDevice::available() const
 {
     return gotDepth;
 }
 
-int KinectDevice::update()
+int FreenectDevice::update()
 {
     return freenect_process_events(f_ctx);
 }
 
-void KinectDevice::setDepthBuffer() {
+void FreenectDevice::setDepthBuffer() {
 
     int next_buffer = (depth_index + 1) % 2;
     freenect_set_depth_buffer(f_dev, depth_buffer[depth_index]);
@@ -99,7 +99,7 @@ void KinectDevice::setDepthBuffer() {
     gotDepth = true;
 }
 
-void KinectDevice::close()
+void FreenectDevice::close()
 {
     die = true;
     pthread_join(freenect_thread, NULL);

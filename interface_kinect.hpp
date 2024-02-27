@@ -9,7 +9,7 @@
 
 
 
-class MSKinectDevice1 : public RGBD {
+class FreenectDevice : public RGBD {
 
     freenect_context *f_ctx;
     freenect_device *f_dev;
@@ -21,7 +21,7 @@ class MSKinectDevice1 : public RGBD {
     // RGBD interface
 public:
 
-    MSKinectDevice1();
+    FreenectDevice();
 
     int open();
     bool available() const;

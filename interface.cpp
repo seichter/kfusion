@@ -549,7 +549,7 @@ RGBD *RGBD::create(RGBD::RGBDDevice device, const char *flags) {
     switch (device) {
 #if defined(KFUSION_INTERFACE_HAVE_FREENECT)
     case RGBD::kRGBDDeviceKinect:
-        return new KinectDevice();
+        return new FreenectDevice();
         break;
 #endif
 
