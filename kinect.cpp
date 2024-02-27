@@ -29,6 +29,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <cstring>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
 
 
 #include <iostream>
