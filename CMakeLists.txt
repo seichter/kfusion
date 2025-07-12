@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.25 FATAL_ERROR)
 
-if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-    set(CMAKE_CUDA_ARCHITECTURES 75)
-endif()
+set(CMAKE_CUDA_ARCHITECTURES 75)
 
 # use CMake detection of CUDA
 project(kfusion LANGUAGES CUDA CXX)
@@ -25,15 +23,9 @@ find_package(CUDAToolkit REQUIRED)
 find_package(Freenect)
 find_package(OpenNI2)
 find_package(LibRealSense)
-find_package(KinectSDK)
+# find_package(KinectSDK)
 
 # general IO
-include_directories(
-    ${CMAKE_BINARY_DIR}/include
-    ${TOON_INCLUDE_PATHS}
-    ${CUDA_INCLUDE_DIRS}
-    ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
-    )
 
 # build CUDA backend library
 add_library(kfusion STATIC
@@ -45,12 +37,22 @@ add_library(kfusion STATIC
     README.md
     )
 
+target_include_directories(kfusion
+    PRIVATE
+    ${CMAKE_BINARY_DIR}/include
+    ${TOON_INCLUDE_PATHS}
+    ${CUDA_INCLUDE_DIRS}
+    ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
+    )
 
 target_link_libraries(kfusion
- ${CUDA_LIBRARIES}
- )
+    CUDA::cudart
+    CUDA::cuda_driver
+)
 
 message("CUDA: '${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}'")
+message("CUDA: '${CUDAToolkit_VERSION}'")
+
 message("GLUT: '${GLUT_INCLUDE_DIR}'")
 message("TooN: '${TOON_INCLUDE_PATHS}'")
 
@@ -133,19 +135,21 @@ configure_file(interface_config.hpp.cmake
 option(KFUSION_CREATE_SCANNER "Create Scanning UI" OFF)
 
 if (KFUSION_CREATE_SCANNER)
-    add_executable(kfusion_scan
-    ${CMAKE_BINARY_DIR}/include/interface_config.hpp
-    kinect.cpp
-    interface.h
-    interface.cpp
-    interface_config.hpp.cmake
-    ${kfusion_srcs}
-    )
 
+    add_executable(kfusion_scan
+        ${CMAKE_BINARY_DIR}/include/interface_config.hpp
+        kinect.cpp
+        interface.h
+        interface.cpp
+        interface_config.hpp.cmake
+        ${kfusion_srcs}
+        )
 
     set_target_properties(kfusion_scan PROPERTIES
         INCLUDE_DIRECTORIES
-        "${kfusion_incs};${CMAKE_BINARY_DIR}/include;${GLUT_INCLUDE_DIR}"
+        ${kfusion_incs}
+        ${CMAKE_BINARY_DIR}/include
+        ${GLUT_INCLUDE_DIR}
         )
 
     target_link_libraries(
@@ -170,15 +174,33 @@ add_executable(kfusion_test
 
 set_target_properties(kfusion_test PROPERTIES
     INCLUDE_DIRECTORIES
-    "${kfusion_incs};${CMAKE_BINARY_DIR}/include;${GLUT_INCLUDE_DIR}"
+    ${kfusion_incs}
+    ${CMAKE_BINARY_DIR}/include
+    ${GLUT_INCLUDE_DIR}
     )
 
 target_include_directories(kfusion_test PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 
 target_link_libraries(
     kfusion_test
+    PRIVATE
     kfusion
     ${GLUT_LIBRARIES}
     ${OPENGL_LIBRARIES}
-    ${CUDA_LIBRARIES}
+    CUDA::cudart
+    CUDA::cuda_driver
+    )
+
+
+add_executable(kfusion_devicequery
+    devicequery.cpp
+    )
+
+target_include_directories(kfusion_devicequery PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+
+target_link_libraries(
+    kfusion_devicequery
+    PRIVATE
+    CUDA::cudart
+    CUDA::cuda_driver
     )

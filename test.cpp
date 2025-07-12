@@ -23,7 +23,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "helpers.cuh"
 #include "kfusion.cuh"
-#include <TooN/se3.h>
+#include <TooN/TooN.h>
 
 #include <cmath>
 #include <iomanip>
@@ -44,9 +44,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // using namespace std;
 // using namespace TooN;
 
-TooN::SE3<float> preTrans(makeVector(0.0, 0, -0.9, 0, 0, 0));
-TooN::SE3<float> rot(makeVector(0.0, 0, 0, 0, 0, 0));
-TooN::SE3<float> trans(makeVector(0.5, 0.5, 0.5, 0, 0, 0));
+TooN::SE3<float> preTrans(TooN::makeVector(0.0, 0, -0.9, 0, 0, 0));
+TooN::SE3<float> rot(TooN::makeVector(0.0, 0, 0, 0, 0, 0));
+TooN::SE3<float> trans(TooN::makeVector(0.5, 0.5, 0.5, 0, 0, 0));
 
 KFusion kfusion;
 Volume reference;
@@ -176,16 +176,16 @@ void keys(unsigned char key, int x, int y) {
 void specials(int key, int x, int y) {
   switch (key) {
   case GLUT_KEY_LEFT:
-    rot *= TooN::SE3<float>(makeVector(0.0, 0, 0, 0, 0.1, 0));
+    rot *= TooN::SE3<float>(TooN::makeVector(0.0, 0, 0, 0, 0.1, 0));
     break;
   case GLUT_KEY_RIGHT:
-    rot *= TooN::SE3<float>(makeVector(0.0, 0, 0, 0, -0.1, 0));
+    rot *= TooN::SE3<float>(TooN::makeVector(0.0, 0, 0, 0, -0.1, 0));
     break;
   case GLUT_KEY_UP:
-    rot *= TooN::SE3<float>(makeVector(0.0, 0, 0, -0.1, 0, 0));
+    rot *= TooN::SE3<float>(TooN::makeVector(0.0, 0, 0, -0.1, 0, 0));
     break;
   case GLUT_KEY_DOWN:
-    rot *= TooN::SE3<float>(makeVector(0.0, 0, 0, 0.1, 0, 0));
+    rot *= TooN::SE3<float>(TooN::makeVector(0.0, 0, 0, 0.1, 0, 0));
     break;
   }
   glutPostRedisplay();
@@ -196,7 +196,7 @@ void idle(void) {
     exit(0);
 
   if (benchmark)
-    rot *= TooN::SE3<float>(makeVector(0.0, 0, 0, 0, 0.02, 0));
+    rot *= TooN::SE3<float>(TooN::makeVector(0.0, 0, 0, 0, 0.02, 0));
 
   glutPostRedisplay();
 }
