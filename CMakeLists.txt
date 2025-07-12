@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.25 FATAL_ERROR)
 
-set(CMAKE_CUDA_ARCHITECTURES 75)
+# this can be changed to newer versions
+set(CMAKE_CUDA_ARCHITECTURES 61)
 
 # use CMake detection of CUDA
 project(kfusion LANGUAGES CUDA CXX)

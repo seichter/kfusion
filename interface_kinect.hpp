@@ -1,26 +1,22 @@
 #ifndef INTERFACE_KINECT_HPP
 #define INTERFACE_KINECT_HPP
 
-
 #include "interface.h"
 
 #include <libfreenect/libfreenect.h>
 #include <pthread.h>
 
-
-
 class FreenectDevice : public RGBD {
 
-    freenect_context *f_ctx;
-    freenect_device *f_dev;
+    freenect_context* f_ctx;
+    freenect_device* f_dev;
     bool gotDepth;
 
     pthread_t freenect_thread;
     bool die;
 
     // RGBD interface
-public:
-
+  public:
     FreenectDevice();
 
     int open();
@@ -33,11 +29,7 @@ public:
     void setDirty(bool isDirty) { gotDepth = isDirty; }
     bool dirty() const { return gotDepth; }
 
-
     void setDepthBuffer();
 };
 
-
-
 #endif
-

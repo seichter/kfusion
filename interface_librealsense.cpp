@@ -1,78 +1,74 @@
 
-#include <iostream>
-#include <iomanip>
 #include <cstring>
+#include <iomanip>
+#include <iostream>
 
 #include "interface_librealsense.hpp"
 
-//void RealSenseDevice_depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
+// void RealSenseDevice_depth_cb(freenect_device *dev, void *v_depth, uint32_t
+// timestamp)
 //{
-//    RealSenseDevice * device = static_cast<RealSenseDevice*>(freenect_get_user(dev));
-//    device->setDepthBuffer();
-//}
+//     RealSenseDevice * device =
+//     static_cast<RealSenseDevice*>(freenect_get_user(dev));
+//     device->setDepthBuffer();
+// }
 
-
-bool align_depth_to_color = false;
-bool align_color_to_depth = false;
+bool align_depth_to_color        = false;
+bool align_color_to_depth        = false;
 bool color_rectification_enabled = false;
 
-rs_stream depthStream = RS_STREAM_DEPTH;
-rs_stream colorStream = RS_STREAM_COLOR;
+static constexpr rs_stream depthStream = RS_STREAM_DEPTH;
+static constexpr rs_stream colorStream = RS_STREAM_COLOR;
 
-
-void *RealSenseDevice_freenect_threadfunc(void *arg)
-{
+void* RealSenseDevice_freenect_threadfunc(void* arg) {
 
     RealSenseDevice* dev = static_cast<RealSenseDevice*>(arg);
 
-    while(!dev->stopped()) {
+    while (!dev->stopped()) {
         int res = dev->update();
     }
     return nullptr;
 }
 
 RealSenseDevice::RealSenseDevice()
-    : RGBD()
-    , gotDepth(false)
-    , die(false)
-    , depthScale(1.f)
-{
-}
+    : RGBD(), gotDepth(false), die(false), depthScale(1.f) {}
 
-int RealSenseDevice::open()
-{
+int RealSenseDevice::open() {
 
-    rs_error *e = nullptr;
-    ctx = rs_create_context(RS_API_VERSION, &e);
+    rs_error* e = nullptr;
+    ctx         = rs_create_context(RS_API_VERSION, &e);
 
     if (ctx == nullptr) {
-        std::cerr << "cannot instantiate RealSense API " << rs_get_error_message(e) << std::endl;
+        std::cerr << "cannot instantiate RealSense API "
+                  << rs_get_error_message(e) << std::endl;
     }
 
     int devices = rs_get_device_count(ctx, &e);
     if (devices == 0) {
-        std::cerr << "no realsense capture device " << rs_get_error_message(e) << std::endl;
+        std::cerr << "no realsense capture device " << rs_get_error_message(e)
+                  << std::endl;
         return 1;
     }
 
     dev = rs_get_device(ctx, 0, &e);
 
-    std::cout << "Realsense Device: " << rs_get_device_name(dev, &e) << std::endl;
-    std::cout << "Realsense Serial: " << rs_get_device_serial(dev, &e) << std::endl;
-    std::cout << "Realsense FW ver: " << rs_get_device_firmware_version(dev, &e) << std::endl;
+    std::cout << "Realsense Device: " << rs_get_device_name(dev, &e)
+              << std::endl;
+    std::cout << "Realsense Serial: " << rs_get_device_serial(dev, &e)
+              << std::endl;
+    std::cout << "Realsense FW ver: " << rs_get_device_firmware_version(dev, &e)
+              << std::endl;
 
     int framerate = 30;
     rs_enable_stream(dev, depthStream, 0, 0, RS_FORMAT_Z16, framerate, &e);
 
-    int depthWidth = rs_get_stream_width(dev,depthStream,nullptr);
-    int depthHeight = rs_get_stream_height(dev,depthStream,nullptr);
+    int depthWidth  = rs_get_stream_width(dev, depthStream, nullptr);
+    int depthHeight = rs_get_stream_height(dev, depthStream, nullptr);
 
-    rs_enable_stream(dev, colorStream, depthWidth, depthHeight, RS_FORMAT_RGB8, framerate, &e);
+    rs_enable_stream(dev, colorStream, depthWidth, depthHeight, RS_FORMAT_RGB8,
+                     framerate, &e);
 
-
-    rs_get_stream_intrinsics(dev,colorStream,&intrinsics,nullptr);
-
-
+    rs_get_stream_intrinsics(dev, colorStream, &intrinsics, nullptr);
 
     std::cout << "width:" << intrinsics.width << " height:" << intrinsics.height
               << " focalx:" << intrinsics.fx << " focaly:" << intrinsics.fy
@@ -80,25 +76,23 @@ int RealSenseDevice::open()
               << " coeff0:" << intrinsics.coeffs[0]
               << " coeff1:" << intrinsics.coeffs[1]
               << " coeff2:" << intrinsics.coeffs[2]
-              << " coeff3:" << intrinsics.coeffs[3]
+              << " coeff3:" << intrinsics.coeffs[3] << std::endl;
+
+    int colorWidth  = rs_get_stream_width(dev, colorStream, nullptr);
+    int colorHeight = rs_get_stream_height(dev, colorStream, nullptr);
+    depthScale      = rs_get_device_depth_scale(dev, nullptr);
+
+    std::cout << "depth image " << depthWidth << "x" << depthHeight
+              << " scale:" << depthScale << std::endl;
+    std::cout << "color image " << colorWidth << "x" << colorHeight
               << std::endl;
-
-
-
-    int colorWidth = rs_get_stream_width(dev,colorStream,nullptr);
-    int colorHeight = rs_get_stream_height(dev,colorStream,nullptr);
-    depthScale = rs_get_device_depth_scale(dev,nullptr);
-
-    std::cout << "depth image " << depthWidth << "x" << depthHeight << " scale:" << depthScale << std::endl;
-    std::cout << "color image " << colorWidth << "x" << colorHeight << std::endl;
-
-
 
     rs_start_device(dev, &e);
 
-    int res = pthread_create(&_thread, nullptr, RealSenseDevice_freenect_threadfunc, this);
+    int res = pthread_create(&_thread, nullptr,
+                             RealSenseDevice_freenect_threadfunc, this);
 
-    if(res){
+    if (res) {
         std::cerr << "error starting realsense thread " << res << std::endl;
         return 1;
     }
@@ -108,14 +102,10 @@ int RealSenseDevice::open()
     return 0;
 }
 
-bool RealSenseDevice::available() const
-{
-    return gotDepth;
-}
+bool RealSenseDevice::available() const { return gotDepth; }
 
-int RealSenseDevice::update()
-{
-    rs_error * e = nullptr;
+int RealSenseDevice::update() {
+    rs_error* e = nullptr;
 
     //    gotDepth = false;
 
@@ -128,18 +118,19 @@ int RealSenseDevice::update()
 
 void RealSenseDevice::setDepthBuffer() {
 
-    rs_error * e = nullptr;
+    rs_error* e = nullptr;
 
     int next_buffer = (depth_index + 1) % 2;
 
-    const size_t depthBufferSize = 640*480;
+    const size_t depthBufferSize = 640 * 480;
 
-    const uint16_t* depthPtr = (const uint16_t*)rs_get_frame_data(dev, depthStream, &e);
+    const uint16_t* depthPtr =
+        (const uint16_t*)rs_get_frame_data(dev, depthStream, &e);
 
     if (depthPtr) {
 
-        memcpy(depth_buffer[depth_index],depthPtr,depthBufferSize * sizeof(uint16_t));
-
+        memcpy(depth_buffer[depth_index], depthPtr,
+               depthBufferSize * sizeof(uint16_t));
 #if 0
         //    uint16_t rescale = 1.f / depthScale;
 
@@ -148,34 +139,22 @@ void RealSenseDevice::setDepthBuffer() {
             depth_buffer[depth_index][i] -= 1;
         }
 #endif
-        const unsigned char* rgbPtr = (const unsigned char*)rs_get_frame_data(dev, colorStream, &e);
-        memcpy(rgb_buffer,rgbPtr,640*480*3);
+        const unsigned char* rgbPtr =
+            (const unsigned char*)rs_get_frame_data(dev, colorStream, &e);
+        memcpy(rgb_buffer, rgbPtr, 640 * 480 * 3);
 
         depth_index = next_buffer;
-        gotDepth = true;
-
+        gotDepth    = true;
     }
 }
 
-float RealSenseDevice::focalX() const
-{
-    return intrinsics.fx;
-}
+float RealSenseDevice::focalX() const { return intrinsics.fx; }
 
-float RealSenseDevice::focalY() const
-{
-    return intrinsics.fy;
-}
+float RealSenseDevice::focalY() const { return intrinsics.fy; }
 
-
-
-void RealSenseDevice::close()
-{
+void RealSenseDevice::close() {
     die = true;
     pthread_join(_thread, nullptr);
 
-
-    rs_delete_context(ctx,nullptr);
-
-
+    rs_delete_context(ctx, nullptr);
 }

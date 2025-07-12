@@ -15,15 +15,13 @@ class OpenNIDevice : public RGBD {
 
     bool gotDepth;
 
-	std::thread capture_thread;
+    std::thread capture_thread;
 
     bool die;
 
     // RGBD interface
-public:
-
+  public:
     OpenNIDevice();
-
     int open();
     bool available() const { return true; }
     int update();
@@ -33,7 +31,6 @@ public:
 
     void setDirty(bool isDirty) { gotDepth = isDirty; }
     bool dirty() const { return gotDepth; }
-
 
     void setDepthBuffer();
 

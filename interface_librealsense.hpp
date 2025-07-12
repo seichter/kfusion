@@ -4,29 +4,26 @@
 #include <librealsense/rs.h>
 #include <pthread.h>
 
-
 #include "interface.h"
-
 
 class RealSenseDevice : public RGBD {
 
-    rs_context *ctx = nullptr;
-    rs_device *dev = nullptr;
+    rs_context* ctx = nullptr;
+    rs_device* dev  = nullptr;
 
     bool gotDepth = false;
 
-    pthread_t _thread {};
+    pthread_t _thread{};
     bool die = false;
 
-    double lastTimeStamp {};
+    double lastTimeStamp{};
 
     float depthScale = float(1);
 
     rs_intrinsics intrinsics;
 
     // RGBD interface
-public:
-
+  public:
     RealSenseDevice();
 
     int open();
@@ -39,15 +36,10 @@ public:
     void setDirty(bool isDirty) { gotDepth = isDirty; }
     bool dirty() const { return gotDepth; }
 
-
     void setDepthBuffer();
 
     float focalX() const;
     float focalY() const;
-
-
 };
-
-
 
 #endif
