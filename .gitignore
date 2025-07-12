@@ -1,6 +1,8 @@
 _darcs
 *.o
+*.cu_o
 kinect
 test
 build
 *.txt.user*
+CMakeCache.txt

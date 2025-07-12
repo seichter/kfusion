@@ -1,9 +1,13 @@
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.25 FATAL_ERROR)
+
+if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+    set(CMAKE_CUDA_ARCHITECTURES 75)
+endif()
 
 # use CMake detection of CUDA
-project(kfusion LANGUAGES CXX CUDA)
+project(kfusion LANGUAGES CUDA CXX)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # internal stuff
@@ -14,7 +18,8 @@ find_package(TooN REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(Threads REQUIRED)
-find_package(CUDA REQUIRED)
+find_package(CUDAToolkit REQUIRED)
+# find_package(CUDA REQUIRED)
 
 # capture libs for depth cameras
 find_package(Freenect)
@@ -27,36 +32,36 @@ include_directories(
     ${CMAKE_BINARY_DIR}/include
     ${TOON_INCLUDE_PATHS}
     ${CUDA_INCLUDE_DIRS}
+    ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
     )
 
 # build CUDA backend library
 add_library(kfusion STATIC
     helpers.cu
-    helpers.h
+    helpers.cuh
     kfusion.cu
-    kfusion.h
+    kfusion.cuh
     cutil_math.h
     README.md
     )
 
 
 target_link_libraries(kfusion
-	${CUDA_LIBRARIES}
-	)
+ ${CUDA_LIBRARIES}
+ )
+
+message("CUDA: '${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}'")
+message("GLUT: '${GLUT_INCLUDE_DIR}'")
+message("TooN: '${TOON_INCLUDE_PATHS}'")
 
 #message("'OpenNI2: ${OPENNI2_INCLUDES}'")
-#message("'CUDA: ${CUDA_INCLUDE_DIRS}'")
-#message("'GLUT: ${GLUT_INCLUDE_DIR}'")
 
 #
 # skip these for Windows
 #
 if (NOT WIN32)
-
-	set_target_properties(kfusion PROPERTIES POSITION_INDEPENDENT_CODE ON)
-
-	set_target_properties(kfusion PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-
+    set_target_properties(kfusion PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    set_target_properties(kfusion PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 endif()
 
 set_target_properties(kfusion PROPERTIES INCLUDE_DIRECTORIES "${CUDA_INCLUDE_DIRS};${TOON_INCLUDE_PATHS}")
@@ -115,7 +120,7 @@ if (KinectSDK_FOUND AND KFUSION_SCAN_ENABLE_MSKINECT1)
     list(APPEND kfusion_incs ${KinectSDK_INCLUDE_DIRS})
     list(APPEND kfusion_srcs interface_mskinect.hpp interface_mskinect.cpp)
 
-	set(KFUSION_INTERFACE_HAVE_MSKINECT1 TRUE)
+    set(KFUSION_INTERFACE_HAVE_MSKINECT1 TRUE)
 
 endif()
 
@@ -124,7 +129,11 @@ configure_file(interface_config.hpp.cmake
     ${CMAKE_BINARY_DIR}/include/interface_config.hpp
     )
 
-add_executable(kfusion_scan
+
+option(KFUSION_CREATE_SCANNER "Create Scanning UI" OFF)
+
+if (KFUSION_CREATE_SCANNER)
+    add_executable(kfusion_scan
     ${CMAKE_BINARY_DIR}/include/interface_config.hpp
     kinect.cpp
     interface.h
@@ -134,23 +143,25 @@ add_executable(kfusion_scan
     )
 
 
-set_target_properties(kfusion_scan PROPERTIES
-    INCLUDE_DIRECTORIES
-    "${kfusion_incs};${CMAKE_BINARY_DIR}/include;${GLUT_INCLUDE_DIR}"
-    )
+    set_target_properties(kfusion_scan PROPERTIES
+        INCLUDE_DIRECTORIES
+        "${kfusion_incs};${CMAKE_BINARY_DIR}/include;${GLUT_INCLUDE_DIR}"
+        )
 
-target_link_libraries(
-    kfusion_scan
-    kfusion
-    ${GLUT_LIBRARIES}
-    ${OPENGL_LIBRARIES}
-	${kfusion_libs}
-    )
+    target_link_libraries(
+        kfusion_scan
+        kfusion
+        ${GLUT_LIBRARIES}
+        ${OPENGL_LIBRARIES}
+        ${kfusion_libs}
+        )
 
-# message("LIBS : ${kfusion_libs}")
-# message("LIBS : ${OPENGL_LIBRARIES}")
-# message("LIBS : ${GLUT_LIBRARIES}")
-# message("CUDA : ${CUDA_LIBRARIES}")
+    # message("LIBS : ${kfusion_libs}")
+    # message("LIBS : ${OPENGL_LIBRARIES}")
+    # message("LIBS : ${GLUT_LIBRARIES}")
+    # message("CUDA : ${CUDA_LIBRARIES}")
+
+endif()
 
 
 add_executable(kfusion_test
@@ -162,11 +173,12 @@ set_target_properties(kfusion_test PROPERTIES
     "${kfusion_incs};${CMAKE_BINARY_DIR}/include;${GLUT_INCLUDE_DIR}"
     )
 
+target_include_directories(kfusion_test PRIVATE ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+
 target_link_libraries(
     kfusion_test
     kfusion
     ${GLUT_LIBRARIES}
     ${OPENGL_LIBRARIES}
-	${CUDA_LIBRARIES}
+    ${CUDA_LIBRARIES}
     )
-

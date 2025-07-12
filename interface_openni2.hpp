@@ -2,7 +2,6 @@
 #define KFUSION_INTERFACE_OPENNI2
 
 #include <openni2/OpenNI.h>
-// #include <pthread.h>
 
 #include "interface.h"
 

@@ -10,17 +10,17 @@
 
 class RealSenseDevice : public RGBD {
 
-    rs_context *ctx;
-    rs_device *dev;
+    rs_context *ctx = nullptr;
+    rs_device *dev = nullptr;
 
-    bool gotDepth;
+    bool gotDepth = false;
 
-    pthread_t _thread;
-    bool die;
+    pthread_t _thread {};
+    bool die = false;
 
-    double lastTimeStamp;
+    double lastTimeStamp {};
 
-    float depthScale;
+    float depthScale = float(1);
 
     rs_intrinsics intrinsics;
 
@@ -51,4 +51,3 @@ public:
 
 
 #endif
-
